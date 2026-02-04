@@ -126,19 +126,20 @@
           <!-- 删除按钮 -->
           <un-table-column :label="$t('operation')" width="140" fixed="right" align="center">
             <template #default="{ row }">
-              <un-tooltip>
-                :content = "getDeleteTooltip(row)"
-                :disabled="row.currentNode"
+              <un-tooltip
+                :content="getDeleteTooltip(row)"
+                :disabled="row.currentNode === '1'"
                 placement="top"
+              >
                 <span>             
                   <un-button 
                     type="text" 
-                    :disabled="row.currentNode !==1"
+                    :disabled="row.currentNode !== '1'"
                     @click="deleteSubmission(row)">
                     {{ $t('delete') }}
                   </un-button>
-              </span>
-            </un-tooltip>
+                </span>
+              </un-tooltip>
             </template>
           </un-table-column>
 
@@ -357,15 +358,15 @@ export default un.component({
 
         switch(currentNode){
           case '2':
-            return this.$t(deleteDisabled.review);
+            return this.$t('deleteDisabled.review');
           case '3':
-            return this.$t(deleteDisabled.initialApproval);
+            return this.$t('deleteDisabled.initialApproval');
           case '4':
-            return this.$t(deleteDisabled.finalApproval);
+            return this.$t('deleteDisabled.finalApproval');
           case '5':
-            return this.$t(deleteDisabled.completed);
+            return this.$t('deleteDisabled.completed');
           default:
-          return this.$t(deleteDisabled.notAllowed);
+            return this.$t('deleteDisabled.notAllowed');
         }
     },
 

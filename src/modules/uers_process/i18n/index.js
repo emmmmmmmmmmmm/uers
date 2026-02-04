@@ -59,7 +59,7 @@ module.exports = {
 		"exporting":"正在导出...",
 		deleteDisabled:{
 			"review":"当前任务处于复核节点，不可删除",
-			"initialApproval;":"当前任务处于初始审核节点，不可删除",
+			"initialApproval":"当前任务处于初始审核节点，不可删除",
 			"finalApproval":"当前任务处于最终审核节点，不可删除",
 			"completed":"当前任务已完成，不可删除",
 			"notAllowed":"当前任务状态不允许删除"
@@ -125,9 +125,9 @@ module.exports = {
 		"exporting":"exporting...",
 		deleteDisabled:{
 			"review":"Current task is in Review stage,cannot be deleted",
-			"initialApproval;":"Current task is in Initial stage,cannot be deleted",
+			"initialApproval":"Current task is in Initial Approval stage,cannot be deleted",
 			"finalApproval":"Current task is in Final Approval stage,cannot be deleted",
-			"completed":"Current task is in Final Approval stage,cannot be deleted",
+			"completed":"Current task is completed,cannot be deleted",
 			"notAllowed":"Current task status does not allow deletion"
 		}
 	}
