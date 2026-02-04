@@ -14,13 +14,13 @@
         <un-table 
           :data="processed.tableData" 
           v-loading="processed.loading"
-          :max-height="350"
           :unicorn-loading-text="$t('Waiting for loading')"
           unicorn-loading-spinner="un-icon-loading"
           stripe
           :row-style="{ height: '40px' }"
           :header-row-style="{ height: '40px' }"
-          style="width: 100%"
+          style="width: 100%; height: 100%"
+          class="auto-height-table"
         >
           <un-table-column type="index" :label="$t('NO.')" width="80" align="center"></un-table-column>
           <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
@@ -61,7 +61,8 @@
           stripe
           :row-style="{ height: '40px' }"
           :header-row-style="{ height: '40px' }"
-          style="width: 100%"
+          style="width: 100%; height: 100%"
+          class="auto-height-table"
         >
           <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
           <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
@@ -99,13 +100,13 @@
         <un-table 
           :data="mySubmission.tableData" 
           v-loading="mySubmission.loading"
-          :max-height="350"
           :unicorn-loading-text="$t('Waiting for loading')"
           unicorn-loading-spinner="un-icon-loading"
           stripe
           :row-style="{ height: '40px' }"
           :header-row-style="{ height: '40px' }"
-          style="width: 100%"
+          style="width: 100%; height: 100%"
+          class="auto-height-table"
         >
           <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
           <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
@@ -169,7 +170,8 @@
           stripe
           :row-style="{ height: '40px' }"
           :header-row-style="{ height: '40px' }"
-          style="width: 100%"
+          style="width: 100%; height: 100%"
+          class="auto-height-table"
         >
           <un-table-column prop="procId" :label="$t('procId')" width="100" align="center"></un-table-column>
           <un-table-column prop="title" :label="$t('title')" width="240" align="center"></un-table-column>
@@ -556,18 +558,43 @@ export default un.component({
   background: none;
   margin: 0 !important;
   padding: 0 !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  ::v-deep .un-card__body {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  ::v-deep .un-tabs {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
   
   .un-tabs__header {
     padding-left: 20px;
     margin-bottom: 0;
     background: #f8f8f8;
+    flex-shrink: 0;
   }
   
-  .un-tabs__content {
+  ::v-deep .un-tabs__content {
     margin: 16px;
     padding: 24px;
     background: #fff;
-    min-height: 74.33vh;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+  }
+  
+  ::v-deep .un-tab-pane {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
   }
   
   .un-tabs__item {
@@ -582,11 +609,28 @@ export default un.component({
     td, th { padding: 0; text-align: center; }
   }
   
+  .auto-height-table {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    
+    ::v-deep .un-table__body-wrapper {
+      flex: 1;
+      overflow-y: auto;
+      max-height: none !important;
+    }
+    
+    ::v-deep .un-table__header-wrapper {
+      flex-shrink: 0;
+    }
+  }
+  
   .query-form {
     display: flex;
     flex-wrap: wrap;
     margin-bottom: 10px;
     margin-top: 10px;
+    flex-shrink: 0;
     
     .un-form-item {
       width: 33.3%;
@@ -608,6 +652,8 @@ export default un.component({
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-shrink: 0;
+    margin-top: 16px;
     
     .totalNum {
       font-size: 14px;
