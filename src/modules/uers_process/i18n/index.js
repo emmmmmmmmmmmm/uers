@@ -52,10 +52,18 @@ module.exports = {
 		"deleteSuccess":"删除成功",
 		"deleteFailed":"删除失败",
 		"confirmApprove":"确认审批通过",
-		"confirmApprove":"确认审批通过",
 		"approveSuccess":"审批成功",
 		"approveFailed":"审批失败",
-		"NO.":"序号"
+		"NO.":"序号",
+		"exportExcel":"导出excel",
+		"exporting":"正在导出...",
+		deleteDisabled:{
+			"review":"当前任务处于复核节点，不可删除",
+			"initialApproval;":"当前任务处于初始审核节点，不可删除",
+			"finalApproval":"当前任务处于最终审核节点，不可删除",
+			"completed":"当前任务已完成，不可删除",
+			"notAllowed":"当前任务状态不允许删除"
+		}
 	},	
 	'en-US': {
 		'uers_process': 'taskList',
@@ -112,6 +120,15 @@ module.exports = {
 		"confirmApprove":"confirmApprove",
 		"approveSuccess":"approveSuccess",
 		"approveFailed":"approveFailed",
-		"NO.":"NO."
+		"NO.":"NO.",
+		"exportExcel":"exportExcel",
+		"exporting":"exporting...",
+		deleteDisabled:{
+			"review":"Current task is in Review stage,cannot be deleted",
+			"initialApproval;":"Current task is in Initial stage,cannot be deleted",
+			"finalApproval":"Current task is in Final Approval stage,cannot be deleted",
+			"completed":"Current task is in Final Approval stage,cannot be deleted",
+			"notAllowed":"Current task status does not allow deletion"
+		}
 	}
 }

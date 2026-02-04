@@ -115,23 +115,30 @@
 
           <un-table-column prop="taskStatus" :label="$t('taskStatus')" width="120" align="center">
             <template slot-scope="scope">
-              <span v-if="scope.row.taskStatus==='1'">{{ $t('inProcess') }}</span>
+              <span v-if="scope.row.taskStatus==='1'">{{ $t('inProcess') }}</span> 
               <span v-else-if="scope.row.taskStatus==='2'" >{{ $t('completed') }}</span>
               <span v-else>{{ $t('unknow') }}</span>
             </template>
           </un-table-column>
           
           <un-table-column prop="currentUsers" :label="$t('currentUsers')" width="200" align="center"></un-table-column>
-
-
+          
+          <!-- 删除按钮 -->
           <un-table-column :label="$t('operation')" width="140" fixed="right" align="center">
             <template #default="{ row }">
-              <un-button
-                  type="text"
-                  :disabled="row.currentNote !== '1'"
-                  @click="deleteSubmission(row)">
-                {{ $t('delete') }}
-              </un-button>
+              <un-tooltip>
+                :content = "getDeleteTooltip(row)"
+                :disabled="row.currentNode"
+                placement="top"
+                <span>             
+                  <un-button 
+                    type="text" 
+                    :disabled="row.currentNode !==1"
+                    @click="deleteSubmission(row)">
+                    {{ $t('delete') }}
+                  </un-button>
+              </span>
+            </un-tooltip>
             </template>
           </un-table-column>
 
@@ -345,6 +352,30 @@ export default un.component({
     },
     */
 
+
+    getDeleteWarningMessage(currentNode){
+
+        switch(currentNode){
+          case '2':
+            return this.$t(deleteDisabled.review);
+          case '3':
+            return this.$t(deleteDisabled.initialApproval);
+          case '4':
+            return this.$t(deleteDisabled.finalApproval);
+          case '5':
+            return this.$t(deleteDisabled.completed);
+          default:
+          return this.$t(deleteDisabled.notAllowed);
+        }
+    },
+
+    getDeleteTooltip(row){
+      if(row.currentNode==='1'){
+        return '';
+      }
+      return this.getDeleteWarningMessage(row.currentNode);
+    },
+
     async approval(row) {
       try {
         // 确认对话框
@@ -372,6 +403,12 @@ export default un.component({
 
     async deleteSubmission(row) {
       try {
+
+        if(row.currentNode!=='1'){
+          this.message=warning(this.getDeleteWarningMessage(row.currentNode));
+          return;
+        }
+
         // 确认对话框
         await this.$confirm(this.$t('confirmDelete'), this.$t('warning'), {
           confirmButtonText: this.$t('confirm'),

@@ -131,7 +131,7 @@ const createTabAction = (prefix, apiPath) => async ({ commit, state }, payload) 
 const actions = {
   getProcessTodeal: createTabAction('todeal', '/task/toDeal/get'),
   //getMySubmissions: createTabAction('mySubmission', '/submission/list/get'),
-  getMySubmissions: createTabAction('mySubmission', '/task/toDeal/get'),
+  getMySubmissions: createTabAction('mySubmission', '/task/userTask/get'),
   //getFlowsToMe: createTabAction('flowToMe', '/flow/tome/get'),
   getFlowsToMe: createTabAction('flowToMe', '/task/toDeal/get'),
   getProcessedTasks: createTabAction('processed', '/task/taskList/get'),
