@@ -55,6 +55,7 @@
         <un-table 
           :data="todeal.tableData" 
           v-loading="todeal.loading"
+          :max-height="400"
           :unicorn-loading-text="$t('Waiting for loading')"
           unicorn-loading-spinner="un-icon-loading"
           @selection-change="handleSelectionChange"
@@ -567,7 +568,8 @@ export default un.component({
     margin: 16px;
     padding: 24px;
     background: #fff;
-    min-height: 74.33vh;
+    height: calc(100vh - 260px);
+    overflow-y: auto;
   }
   
   .un-tabs__item {
