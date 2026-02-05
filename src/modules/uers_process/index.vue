@@ -26,7 +26,11 @@
           <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
           <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
           <un-table-column prop="belongLine" :label="$t('belongLine')" width="100" align="center"></un-table-column>
-          <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center"></un-table-column>
+          <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.taskUserName || scope.row.taskUser }}
+            </template>
+          </un-table-column>
           <un-table-column prop="startTime" :label="$t('startTime')" width="200" align="center"></un-table-column>
 
           <un-table-column prop="taskStatus" :label="$t('taskStatus')" width="120" align="center">
@@ -37,7 +41,11 @@
             </template>
           </un-table-column>
 
-          <un-table-column prop="currentUsers" :label="$t('currentUsers')" width="200" align="center"></un-table-column>
+          <un-table-column prop="currentUsers" :label="$t('currentUsers')" width="200" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.currentUsersName || scope.row.currentUsers }}
+            </template>    
+          </un-table-column>
           
         </un-table>
         <pagination-footer 
