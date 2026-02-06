@@ -60,6 +60,14 @@
 
       <!-- 待处理任务 -->
       <un-tab-pane :label="$t('toDealTask')" name="todeal">
+
+        <query-form 
+          :form="processed.queryForm" 
+          @reset="resetQueryForm('processed')" 
+          @submit="fetchData('processed')" 
+          @export="exportToExcel('processed')"
+        />
+        
         <un-table 
           :data="todeal.tableData" 
           v-loading="todeal.loading"
