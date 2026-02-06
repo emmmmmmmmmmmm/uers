@@ -204,17 +204,23 @@
           :header-row-style="{ height: '40px' }"
           style="width: 100%"
         >
-          <un-table-column prop="procId" :label="$t('procId')" width="100" align="center"></un-table-column>
-          <un-table-column prop="title" :label="$t('title')" width="240" align="center"></un-table-column>
-          <un-table-column prop="submitUser" :label="$t('submitUser')" width="150" align="center"></un-table-column>
-          <un-table-column prop="submitDate" :label="$t('submitDate')" min-width="220" align="center"></un-table-column>
-          <un-table-column prop="status" :label="$t('status')" width="120" align="center"></un-table-column>
-          <un-table-column :label="$t('operation')" width="200" fixed="right">
-            <template #default="{ row }">
-              <un-button type="text" @click="approveFlow(row)">{{ $t('approve') }}</un-button>
-              <un-button type="text" @click="rejectFlow(row)">{{ $t('reject') }}</un-button>
+
+        <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
+          <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
+          <un-table-column prop="belongLine" :label="$t('belongLine')" width="100" align="center"></un-table-column>
+          <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center"></un-table-column>
+          <un-table-column prop="startTime" :label="$t('startTime')" width="200" align="center"></un-table-column>
+
+          <un-table-column prop="taskStatus" :label="$t('taskStatus')" width="120" align="center">
+            <template slot-scope="scope">
+              <span v-if="scope.row.taskStatus==='1'">{{ $t('inProcess') }}</span> 
+              <span v-else-if="scope.row.taskStatus==='2'" >{{ $t('completed') }}</span>
+              <span v-else>{{ $t('unknow') }}</span>
             </template>
           </un-table-column>
+          
+          <un-table-column prop="currentUsers" :label="$t('currentUsers')" width="200" align="center"></un-table-column>             
+              
         </un-table>
         <pagination-footer 
           :total="flowToMe.totalNum"
