@@ -60,14 +60,12 @@
 
       <!-- 待处理任务 -->
       <un-tab-pane :label="$t('toDealTask')" name="todeal">
-
         <query-form 
-          :form="processed.queryForm" 
-          @reset="resetQueryForm('processed')" 
-          @submit="fetchData('processed')" 
-          @export="exportToExcel('processed')"
-        />
-        
+          :form="todeal.queryForm" 
+          @reset="resetQueryForm('todeal')" 
+          @submit="fetchData('todeal')" 
+          @export="exportToExcel('todeal')"
+        />        
         <un-table 
           :data="todeal.tableData" 
           v-loading="todeal.loading"
@@ -83,14 +81,32 @@
           <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
           <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
           <un-table-column prop="belongLine" :label="$t('belongLine')" width="100" align="center"></un-table-column>
-          <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center"></un-table-column>
+
+          <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.taskUserName || scope.row.taskUser }}
+            </template>
+          </un-table-column>
+
           <un-table-column prop="startTime" :label="$t('startTime')" width="200" align="center"></un-table-column>
-          <un-table-column prop="taskStatus" :label="$t('taskStatus')" width="120" align="center"></un-table-column>
-          <un-table-column prop="currentUsers" :label="$t('currentUsers')" width="200" align="center"></un-table-column>
+          
+          <un-table-column prop="taskStatus" :label="$t('taskStatus')" width="120" align="center">
+            <template slot-scope="scope">
+              <span v-if="scope.row.taskStatus==='1'">{{ $t('inProcess') }}</span>
+              <span v-else-if="scope.row.taskStatus==='2'" >{{ $t('completed') }}</span>
+              <span v-else>{{ $t('unknow') }}</span>
+            </template>
+          </un-table-column>
+
+          <un-table-column prop="currentUsers" :label="$t('currentUsers')" width="200" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.currentUsersName || scope.row.currentUsers }}
+            </template>    
+          </un-table-column>
+
           <un-table-column :label="$t('operation')" width="140" fixed="right" align="center">
             <template #default="{ row }">
-              <!-- <un-button type="text" @click="navigateTo('approval', row)">{{ $t('approval') }}</un-button> -->
-              <un-button type="text" @click="approval(row)">{{ $t('approval') }}</un-button>
+              <un-button type="text" @click="approveFlow(row)">{{ $t('approval') }}</un-button>
             </template>
           </un-table-column>
         </un-table>
