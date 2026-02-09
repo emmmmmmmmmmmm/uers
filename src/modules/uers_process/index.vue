@@ -192,7 +192,7 @@
           :form="flowToMe.queryForm" 
           @reset="resetQueryForm('flowToMe')" 
           @submit="fetchData('flowToMe')" 
-          @export="exportToExcel('mySubmission')"
+          @export="exportToExcel('flowToMe')"
         />
         <un-table 
           :data="flowToMe.tableData" 
