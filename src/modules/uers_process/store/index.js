@@ -10,9 +10,12 @@ const createTabState = () => ({
   currentPage: 1,
   fetchNum: 50,
   queryForm: {
-    keyName: '',
+    tableName: '',
+    belongLine:'',
     date: ''
-  }
+  },
+  tableOptions:[],
+  lineOptions:[]
 })
 
 const state = {
@@ -48,6 +51,45 @@ const createTabMutations = (prefix) => ({
     const startIndex = state[prefix].cacheData.length
     state[prefix].cacheData.push(...payload.list)
     state[prefix].totalNum = payload.totalNum
+
+    //从数据中提取唯一的tableName和belongLine作为下拉选项
+    if(payload.list && payload.list.length > 0){
+      //提取所有的唯一tableName
+      const tableNames = [...new Set(
+        state[prefix].cacheData
+          .map(item => item.tableName)
+          .filter(name => name) //过滤空值
+      )]
+
+    //提取所有的唯一belongLine
+    const belongLines = [...new Set(
+      state[prefix].cacheData
+        .map(item => item.belongLine)
+        .filter(line => line) //过滤空值
+    )]
+
+    //一次性生成所有选项，避免中间状态
+    const newTableOptions = tableNames.map(name => ({
+      label:name,
+      value:name
+    }))
+
+    const newLineOptions = belongLines.map(line => ({
+      label: line,
+      value: line
+    }))
+
+    //赋值
+    state[prefix].tableOptions = newTableOptions
+    state[prefix].lineOptions = newLineOptions
+    
+    //调试日志
+    console.log(`[${prefix}] tableName选项：`, tableNames.length, newTableOptions)
+    console.log(`[${prefix}] belongLine选项：`, belongLines.length, newLineOptions)
+    console.log(`[${prefix}] 赋值后验证 - tableOptions:`, state[prefix].tableOptions)
+    console.log(`[${prefix}] 赋值后验证 - lineOptions:`, state[prefix].lineOptions)
+    }
+
     state[prefix].tableData = state[prefix].cacheData.slice(
       startIndex, 
       startIndex + state[prefix].pageSize
@@ -133,7 +175,7 @@ const actions = {
   //getMySubmissions: createTabAction('mySubmission', '/submission/list/get'),
   getMySubmissions: createTabAction('mySubmission', '/task/userTask/get'),
   //getFlowsToMe: createTabAction('flowToMe', '/flow/tome/get'),
-  getFlowsToMe: createTabAction('flowToMe', '/task/toDeal/get'),
+  getFlowsToMe: createTabAction('flowToMe', '/task/flowToMe/get'),
   getProcessedTasks: createTabAction('processed', '/task/taskList/get'),
 
   // 新增删除任务API调用
@@ -190,7 +232,7 @@ const actions = {
     },
   
   resetQueryForm({ commit }, { tab }) {
-    commit(`${tab}QueryForm`, { keyName: '', date: '' })
+    commit(`${tab}QueryForm`, { tableName: '', belongLine: '',date: '' })
   },
   
   handleSizeChange({ commit }, { tab, size }) {

@@ -6,6 +6,8 @@
         <un-tab-pane :label="$t('taskProcessed')" name="processed">
         <query-form 
           :form="processed.queryForm" 
+          :table-options="processed.tableOptions"
+          :line-options="processed.lineOptions"
           @reset="resetQueryForm('processed')" 
           @submit="fetchData('processed')" 
           @export="exportToExcel('processed')"
@@ -62,6 +64,8 @@
       <un-tab-pane :label="$t('toDealTask')" name="todeal">
         <query-form 
           :form="todeal.queryForm" 
+          :table-options="todeal.tableOptions"
+          :line-options="todeal.lineOptions"
           @reset="resetQueryForm('todeal')" 
           @submit="fetchData('todeal')" 
           @export="exportToExcel('todeal')"
@@ -125,6 +129,8 @@
       <un-tab-pane :label="$t('mySubmission')" name="mySubmission">
         <query-form 
           :form="mySubmission.queryForm" 
+          :table-options="mySubmission.tableOptions"
+          :line-options="mySubmission.lineOptions"
           @reset="resetQueryForm('mySubmission')" 
           @submit="fetchData('mySubmission')" 
           @export="exportToExcel('mySubmission')"
@@ -190,6 +196,8 @@
       <un-tab-pane :label="$t('flowToMe')" name="flowToMe">
         <query-form 
           :form="flowToMe.queryForm" 
+          :table-options="flowToMe.tableOptions"
+          :line-options="flowToMe.lineOptions"
           @reset="resetQueryForm('flowToMe')" 
           @submit="fetchData('flowToMe')" 
           @export="exportToExcel('flowToMe')"
@@ -271,16 +279,55 @@ const PaginationFooter = {
 }
 
 const QueryForm = {
-  props: { form: Object },
+  props: { 
+    form: Object ,
+    tableOptions :{
+      type:Array,
+      default:()=>[]
+    },
+    lineOptions :{
+      type:Array,
+      default:()=>[]
+    }
+  },
+
   template: `
     <un-form :model="form" class="query-form" :inline="true">
 
     <un-form-item :label="$t('tableName')">
-        <un-input v-model="form.tableName" :placeholder="$t('tableName')" class="form-input"></un-input>
+        <un-select 
+          v-model="form.tableName" 
+          :placeholder="$t('tableName')" 
+          class="form-input"
+          filterable
+          allow-create
+          default-first-option
+          clearable>
+          <un-option
+            v-for="item in tableOptions"
+            :key="item.value"
+            :lable="item.label"
+            :value="item.value">
+          </un-option>  
+        </un-select>                
     </un-form-item> 
     
     <un-form-item :label="$t('belongLine')">
-        <un-input v-model="form.belongLine" :placeholder="$t('belongLine')" class="form-input"></un-input>
+        <un-select 
+          v-model="form.belongLine" 
+          :placeholder="$t('belongLine')" 
+          class="form-input"
+          filterable
+          allow-create
+          default-first-option
+          clearable>
+          <un-option
+            v-for="item in lineOptions"
+            :key="item.value"
+            :lable="item.label"
+            :value="item.value">
+          </un-option> 
+        </un-select>
     </un-form-item> 
 
       <un-form-item :label="$t('date')">
