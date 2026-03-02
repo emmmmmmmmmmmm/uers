@@ -573,10 +573,22 @@ export default un.component({
     // 审核通过
     async approveFlow(row) {
       try {
-        await this.$confirm(this.$t('confirmApprove'), this.$t('warning'), {
+        // 使用 prompt 获取审批意见
+        const { value: comment } = await this.$prompt(this.$t('approveCommentPrompt'), this.$t('confirmApprove'), {
           confirmButtonText: this.$t('confirm'),
           cancelButtonText: this.$t('cancel'),
-          type: 'info'
+          inputType: 'textarea',
+          inputPlaceholder: this.$t('approveCommentPlaceholder'),
+          inputValidator: (value) => {
+            if (!value || value.trim() === '') {
+              return this.$t('approveCommentRequired');
+            }
+            if (value.length > 10000) {
+              return this.$t('approveCommentTooLong');
+            }
+            return true;
+          },
+          inputErrorMessage: this.$t('approveCommentRequired')
         });
 
          // 构建审核参数
@@ -584,7 +596,8 @@ export default un.component({
           taskId: row.taskId,
           belongLine: row.belongLine,
           startTime: row.startTime,
-          currentNode:row.currentNode
+          currentNode: row.currentNode,
+          comment: comment.trim()
         }; 
 
         // 调用审批API
