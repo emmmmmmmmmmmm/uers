@@ -340,9 +340,9 @@ const QueryForm = {
         <un-date-picker
           class="date-input"
           v-model="form.date"
-          value-format="yyyy-MM-dd HH:mm"
-          format="yyyy-MM-dd HH:mm"
-          type="datetimerange"
+          value-format="yyyy-MM-dd"
+          format="yyyy-MM-dd"
+          type="daterange"
           :start-placeholder="$t('startDate')"
           :end-placeholder="$t('endDate')"
           range-separator="-"
