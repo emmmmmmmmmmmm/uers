@@ -48,6 +48,12 @@
               {{ scope.row.currentUsersName || scope.row.currentUsers }}
             </template>    
           </un-table-column>
+
+          <un-table-column :label="$t('operation')" width="140" fixed="right" align="center">
+            <template #default>
+              <un-button type="text">{{ $t('view') }}</un-button>
+            </template>
+          </un-table-column>
           
         </un-table>
         <pagination-footer 
@@ -577,7 +583,8 @@ export default un.component({
         const approveFlowParams = {
           taskId: row.taskId,
           belongLine: row.belongLine,
-          startTime: row.startTime
+          startTime: row.startTime,
+          currentNode:row.currentNode
         }; 
 
         // 调用审批API
@@ -585,7 +592,7 @@ export default un.component({
 
         if (response.code === '0') {
           this.$message.success(this.$t('approveSuccess'));
-          this.fetchData('processed'); // 刷新表格数据
+          this.fetchData('todeal'); // 刷新表格数据
         } else {
           this.$message.error(response.msg || this.$t('approveFailed'));
         }
