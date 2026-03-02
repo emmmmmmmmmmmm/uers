@@ -597,6 +597,7 @@ export default un.component({
           belongLine: row.belongLine,
           startTime: row.startTime,
           currentNode: row.currentNode,
+          approveBranch: row.approveBranch,
           comment: comment.trim()
         }; 
 
