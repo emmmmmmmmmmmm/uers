@@ -24,7 +24,7 @@
           :header-row-style="{ height: '40px' }"
           style="width: 100%"
         >
-<!--          <un-table-column type="index" :label="$t('NO.')" width="80" align="center"></un-table-column>-->
+          <!-- <un-table-column type="index" :label="$t('NO.')" width="80" align="center"></un-table-column> -->
           <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
           <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
           <un-table-column prop="belongLine" :label="$t('belongLine')" width="100" align="center"></un-table-column>
@@ -573,22 +573,22 @@ export default un.component({
     // 审核通过
     async approveFlow(row) {
       try {
-        // 使用 prompt 获取审批意见
-        const { value: comment } = await this.$prompt(this.$t('approveCommentPrompt'), this.$t('confirmApprove'), {
+        //使用prompt获取审批意见
+        const{ value:comment } = await this.$prompt(this.$t('approveCommentPrompt'), this.$t('confirmApprove'), {
           confirmButtonText: this.$t('confirm'),
           cancelButtonText: this.$t('cancel'),
           inputType: 'textarea',
-          inputPlaceholder: this.$t('approveCommentPlaceholder'),
-          inputValidator: (value) => {
-            if (!value || value.trim() === '') {
-              return this.$t('approveCommentRequired');
+          inputPlaceholder : this.$t('approveCommentPlaceholder'),
+          inputValidator:(value) => {
+            if(!value || value.trim() === ''){
+              return this.$t('approveCommentRequired')
             }
-            if (value.length > 10000) {
-              return this.$t('approveCommentTooLong');
+            if(value.length > 1000){
+              return this.$t('approveCommentTooLong')
             }
             return true;
           },
-          inputErrorMessage: this.$t('approveCommentRequired')
+          inputErrorMessage:this.$t('approveCommentRequired')
         });
 
          // 构建审核参数
@@ -596,9 +596,9 @@ export default un.component({
           taskId: row.taskId,
           belongLine: row.belongLine,
           startTime: row.startTime,
-          currentNode: row.currentNode,
-          approveBranch: row.approveBranch,
-          comment: comment.trim()
+          currentNode:row.currentNode,
+          approveBranch:row.approveBranch,
+          comment:comment.trim()
         }; 
 
         // 调用审批API
@@ -633,13 +633,36 @@ export default un.component({
 
     //导出excel
     async exportToExcel(tab){
-      const loading = this.$loading(
-        {
+      const loading = this.$loading({
           lock:true,
           text:this.$t('exporting')||('正在导出')
-          //TODO EXCEL导出需要调dsp加密接口，功能待实现
+        })
+
+        try{
+          //获取当前tab的查询条件
+          const tabState = this[tab]
+          const params = {
+            tableName: tabState.queryForm.tableName,
+            belongLine: tabState.queryForm.belongLine,
+            ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
+              startDate: tabState.queryForm.data[0],
+              endDate: tabState.queryForm.data[1]
+            })
+          }
+
+          //调用导出接口
+          const response = await this.exportExcelData({tab,params})
+
+          if(response && response.code === '0'){
+            this.$message.success(this.$t('exportSuccess'))
+          }else{
+            this.$message.error(e.message || this.$t('exportFailed'))
+          }
+        }catch(e){
+          this.$message.error(e.message || this.$t('exportFailed'))
+        }finally{
+          loading.close()
         }
-      )
     }
 
   }
@@ -649,7 +672,7 @@ export default un.component({
     'global': ['gotoPage', 'showMessage']
   },
     actions: {
-      'self': [ 'getProcessTodeal','getMySubmissions','getFlowsToMe','getProcessedTasks','deleteTask','approveFlowTask']
+      'self': [ 'getProcessTodeal','getMySubmissions','getFlowsToMe','getProcessedTasks','deleteTask','approveFlowTask','exportExcelData']
     }
 }, {
   mName: 'agencyTask',

@@ -75,19 +75,13 @@ const createTabMutations = (prefix) => ({
     }))
 
     const newLineOptions = belongLines.map(line => ({
-      label: line,
-      value: line
+      label:line,
+      value:line
     }))
 
     //赋值
     state[prefix].tableOptions = newTableOptions
     state[prefix].lineOptions = newLineOptions
-    
-    //调试日志
-    console.log(`[${prefix}] tableName选项：`, tableNames.length, newTableOptions)
-    console.log(`[${prefix}] belongLine选项：`, belongLines.length, newLineOptions)
-    console.log(`[${prefix}] 赋值后验证 - tableOptions:`, state[prefix].tableOptions)
-    console.log(`[${prefix}] 赋值后验证 - lineOptions:`, state[prefix].lineOptions)
     }
 
     state[prefix].tableData = state[prefix].cacheData.slice(
@@ -228,6 +222,55 @@ const actions = {
           }
         }, { root: true });
         throw e;
+      }
+    },
+
+    //导出excel(后端返回加密文件)
+    async exportExcelData({ commit,state },{tab,params}){
+      try{
+        const res = await un.post('/task/export',{
+          ...params,
+          type:tab
+        },{
+          responseType:blob
+        })
+
+        //从响应头解析文件名
+        let fileName = 'download'
+        const contentDisposition = res.headers.get(content-disposition)
+        if(contentDisposition){
+          //匹配 filename = 'xxxx' 或者 filename = xxxx
+          const match = contentDisposition.match(/filename[*]?=['"]?([^'";]+)/)
+          if(match && match[1]){
+            fileName = decodeURIComponent(match[1])
+          }
+        }
+
+        //下载文件
+        const blob = await res.blob()
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = fileName
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        document.URL.revokeObjectURL(url)
+
+        return { code : '0'}
+
+      }catch(e){
+
+        commit(mutationTypes.SHOW_MESSAGE,{
+          dialogType:'configrm',
+          params:{
+            title:un.i18n.toLocale('error',state.language),
+            message:e.message,
+            type:'error',
+            showCancelButton : false
+          }
+        },{root:true})
+        throw e
       }
     },
   
