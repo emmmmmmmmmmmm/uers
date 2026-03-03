@@ -155,7 +155,12 @@
           <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
           <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
           <un-table-column prop="belongLine" :label="$t('belongLine')" width="100" align="center"></un-table-column>
-          <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center"></un-table-column>
+          <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.taskUserName || scope.row.taskUser }}
+            </template>
+          </un-table-column>
+          
           <un-table-column prop="startTime" :label="$t('startTime')" width="200" align="center"></un-table-column>
 
           <un-table-column prop="taskStatus" :label="$t('taskStatus')" width="120" align="center">
@@ -222,7 +227,12 @@
         <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
           <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
           <un-table-column prop="belongLine" :label="$t('belongLine')" width="100" align="center"></un-table-column>
-          <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center"></un-table-column>
+          <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center">
+            <template slot-scope="scope">
+              {{ scope.row.taskUserName || scope.row.taskUser }}
+            </template>
+          </un-table-column>
+
           <un-table-column prop="startTime" :label="$t('startTime')" width="200" align="center"></un-table-column>
 
           <un-table-column prop="taskStatus" :label="$t('taskStatus')" width="120" align="center">
@@ -598,6 +608,7 @@ export default un.component({
           startTime: row.startTime,
           currentNode:row.currentNode,
           approveBranch:row.approveBranch,
+          applyBranch:row.applyBranch,
           comment:comment.trim()
         }; 
 
@@ -634,32 +645,32 @@ export default un.component({
     //导出excel
     async exportToExcel(tab){
       const loading = this.$loading({
-          lock:true,
-          text:this.$t('exporting')||('正在导出')
+          lock: true,
+          text: this.$t('exporting')||('正在导出')
         })
 
-        try{
+        try {
           //获取当前tab的查询条件
           const tabState = this[tab]
           const params = {
             tableName: tabState.queryForm.tableName,
             belongLine: tabState.queryForm.belongLine,
             ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
-              startDate: tabState.queryForm.data[0],
-              endDate: tabState.queryForm.data[1]
+              startDate: tabState.queryForm.date[0],
+              endDate: tabState.queryForm.date[1]
             })
           }
 
           //调用导出接口
           const response = await this.exportExcelData({tab,params})
 
-          if(response && response.code === '0'){
-            this.$message.success(this.$t('exportSuccess'))
+          if(response && response.code === '0'){  
+            this.$message.success(this.$t('exportSuccess') || '导出成功')
           }else{
-            this.$message.error(e.message || this.$t('exportFailed'))
+            this.$message.error(response.msg || this.$t('exportFailed') || '导出失败')
           }
         }catch(e){
-          this.$message.error(e.message || this.$t('exportFailed'))
+          this.$message.error(e.message || this.$t('exportFailed') || '导出失败')
         }finally{
           loading.close()
         }

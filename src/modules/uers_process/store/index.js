@@ -230,46 +230,50 @@ const actions = {
       try{
         const res = await un.post('/task/export',{
           ...params,
-          type:tab
-        },{
-          responseType:blob
+          type: tab
         })
 
-        //从响应头解析文件名
-        let fileName = 'download'
-        const contentDisposition = res.headers.get(content-disposition)
-        if(contentDisposition){
-          //匹配 filename = 'xxxx' 或者 filename = xxxx
-          const match = contentDisposition.match(/filename[*]?=['"]?([^'";]+)/)
-          if(match && match[1]){
-            fileName = decodeURIComponent(match[1])
-          }
+        const json = await res.json()
+
+        if(json.code !== '0'){
+          throw new Error(json.msg || '导出失败')
         }
 
-        //下载文件
-        const blob = await res.blob()
-        const url = window.URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = fileName
+        const exportData = json.result
+        if(!exportData || exportData.length === 0){
+          throw new Error('导出数据为空')
+        }
+
+        const firstItem = exportData[0]
+        const{ key,fileName,userId } = firstItem
+
+        if(!key || !fileName|| !userId){
+          throw new Error('导出接口返回的数据格式错误')
+        }
+
+        const downloadUrl = '/obs/downLoadDspFile='+encodeURIComponent(key)+'&fileName='+encodeURIComponent(fileName)+'&userId='+encodeURIComponent(userId || '')
+        
+        const link = document .createElement('a')
+        link.href = downloadUrl
+        link.download - fileName
+        link.style.display = 'none'
         document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        document.URL.revokeObjectURL(url)
+        link.click
+        document.body.removeChild(link) 
 
-        return { code : '0'}
+        return { code : '0' }
 
-      }catch(e){
+      } catch (e){
 
         commit(mutationTypes.SHOW_MESSAGE,{
-          dialogType:'configrm',
+          dialogType:'confirm',
           params:{
             title:un.i18n.toLocale('error',state.language),
             message:e.message,
             type:'error',
             showCancelButton : false
           }
-        },{root:true})
+        },{ root:true})
         throw e
       }
     },
