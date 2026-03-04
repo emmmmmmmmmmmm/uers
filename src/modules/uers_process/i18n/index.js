@@ -63,6 +63,9 @@ module.exports = {
 		"exporting":"正在导出...",
 		"exportSuccess":"导出成功",
 		"exportFailed":"导出失败",
+		"dataStatus":"数据状态",
+		"valid":"有效",
+		"invalid":"无效",
 		deleteDisabled:{
 			"review":"当前任务处于复核节点，不可删除",
 			"initialApproval":"当前任务处于初始审核节点，不可删除",
@@ -135,6 +138,9 @@ module.exports = {
 		"exporting":"exporting...",
 		"exportSuccess":"Export Success",
 		"exportFailed":"Export Failed",
+		"dataStatus":"Data Status",
+		"valid":"Valid",
+		"invalid":"Invalid",
 		deleteDisabled:{
 			"review":"Current task is in Review stage,cannot be deleted",
 			"initialApproval":"Current task is in Initial stage,cannot be deleted",

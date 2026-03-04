@@ -12,7 +12,8 @@ const createTabState = () => ({
   queryForm: {
     tableName: '',
     belongLine:'',
-    date: ''
+    date: '',
+    resrv1: ''
   },
   tableOptions:[],
   lineOptions:[]
@@ -127,10 +128,16 @@ const mutations = {
 const createTabAction = (prefix, apiPath) => async ({ commit, state }, payload) => {
   commit(`${prefix}Loading`, true)
   try {
+    const queryForm = { ...state[prefix].queryForm }
+    // 将空字符串转换为null（有效状态），'1'保持不变（无效状态）
+    if (queryForm.resrv1 === '') {
+      queryForm.resrv1 = null
+    }
+    
     const params = {
       begNum: (payload.init ? 1 : state[prefix].currentPage),
       fetchNum: state[prefix].fetchNum,
-      ...state[prefix].queryForm,
+      ...queryForm,
       ...(payload.date && { 
         startDate: payload.date[0], 
         endDate: payload.date[1] 
@@ -279,7 +286,7 @@ const actions = {
     },
   
   resetQueryForm({ commit }, { tab }) {
-    commit(`${tab}QueryForm`, { tableName: '', belongLine: '',date: '' })
+    commit(`${tab}QueryForm`, { tableName: '', belongLine: '',date: '', resrv1: '' })
   },
   
   handleSizeChange({ commit }, { tab, size }) {

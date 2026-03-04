@@ -359,9 +359,19 @@ const QueryForm = {
         />
       </un-form-item>
 
+      <un-form-item :label="$t('dataStatus')">
+        <un-select 
+          v-model="form.resrv1" 
+          :placeholder="$t('dataStatus')" 
+          class="form-input">
+          <un-option :label="$t('valid')" :value="''"></un-option>
+          <un-option :label="$t('invalid')" :value="'1'"></un-option>
+        </un-select>
+      </un-form-item>
+
       <un-form-item>
         <un-button type="primary" class="query-button" @click="$emit('submit')">{{ $t('query') }}</un-button>
-        <un-button class="query-button" @click="form.tableName = ''; form.belongLine = ''; form.date = ''; $emit('reset')">{{ $t('reset') }}</un-button>
+        <un-button class="query-button" @click="form.tableName = ''; form.belongLine = ''; form.date = ''; form.resrv1 = ''; $emit('reset')">{{ $t('reset') }}</un-button>
         <un-button type="success" class="query-button" @click="$emit('export')">{{ $t('exportExcel') }}</un-button>
       </un-form-item>
 
@@ -652,9 +662,13 @@ export default un.component({
         try {
           //获取当前tab的查询条件
           const tabState = this[tab]
+          // 处理resrv1：空字符串转为null（有效），'1'保持不变（无效）
+          const resrv1Value = tabState.queryForm.resrv1 === '' ? null : tabState.queryForm.resrv1
+          
           const params = {
             tableName: tabState.queryForm.tableName,
             belongLine: tabState.queryForm.belongLine,
+            resrv1: resrv1Value,
             ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
               startDate: tabState.queryForm.date[0],
               endDate: tabState.queryForm.date[1]
