@@ -13,7 +13,7 @@ const createTabState = () => ({
     tableName: '',
     belongLine:'',
     date: '',
-    resrv1: ''
+    resrv1:''
   },
   tableOptions:[],
   lineOptions:[]
@@ -128,16 +128,10 @@ const mutations = {
 const createTabAction = (prefix, apiPath) => async ({ commit, state }, payload) => {
   commit(`${prefix}Loading`, true)
   try {
-    const queryForm = { ...state[prefix].queryForm }
-    // 将空字符串转换为null（有效状态），'1'保持不变（无效状态）
-    if (queryForm.resrv1 === '') {
-      queryForm.resrv1 = null
-    }
-    
     const params = {
       begNum: (payload.init ? 1 : state[prefix].currentPage),
       fetchNum: state[prefix].fetchNum,
-      ...queryForm,
+      ...state[prefix].queryForm,
       ...(payload.date && { 
         startDate: payload.date[0], 
         endDate: payload.date[1] 
@@ -232,6 +226,30 @@ const actions = {
       }
     },
 
+    //查看任务附件信息
+    async viewTask({commit,state},payload){
+      try{
+        const res = await un.post('/task/viewTask',payload)
+        const json = await res.resJSON
+
+        if(json.code === '0'){
+          return json
+        }else{
+          throw new Error(json.msg || '查看失败')
+        }
+      }catch(e){
+        commit(mutationTypes.SHOW_MESSAGE,{
+          dialogType: 'confirm',
+          params:{
+            title: un.i18n.toLocale('error',state.language),
+            message: e.message,
+            showCancelButton: false
+          }
+        },{root: true})
+        throw e
+      }
+    },
+
     //导出excel(后端返回加密文件)
     async exportExcelData({ commit,state },{tab,params}){
       try{
@@ -240,7 +258,7 @@ const actions = {
           type: tab
         })
 
-        const json = await res.json()
+        const json = await res.resJSON
 
         if(json.code !== '0'){
           throw new Error(json.msg || '导出失败')
@@ -286,7 +304,7 @@ const actions = {
     },
   
   resetQueryForm({ commit }, { tab }) {
-    commit(`${tab}QueryForm`, { tableName: '', belongLine: '',date: '', resrv1: '' })
+    commit(`${tab}QueryForm`, { tableName: '', belongLine: '',date: '' ,resrv1:''})
   },
   
   handleSizeChange({ commit }, { tab, size }) {

@@ -50,8 +50,8 @@
           </un-table-column>
 
           <un-table-column :label="$t('operation')" width="140" fixed="right" align="center">
-            <template #default>
-              <un-button type="text">{{ $t('view') }}</un-button>
+            <template #default="{ row }">
+              <un-button type="text" @click="handleViewTask(row)">{{ $t('view') }}</un-button>
             </template>
           </un-table-column>
           
@@ -360,13 +360,13 @@ const QueryForm = {
       </un-form-item>
 
       <un-form-item :label="$t('dataStatus')">
-        <un-select 
-          v-model="form.resrv1" 
-          :placeholder="$t('dataStatus')" 
+        <un-select
+          v-model = "form.resrv1"
+          :placeholder="$t('dataStatus')"
           class="form-input">
-          <un-option :label="$t('valid')" :value="''"></un-option>
-          <un-option :label="$t('invalid')" :value="'1'"></un-option>
-        </un-select>
+            <un-option :label="$t('valid')" :value="''"></un-option>
+            <un-option :label="$t('invalid')" :value="'1'"></un-option>
+        </un-select>   
       </un-form-item>
 
       <un-form-item>
@@ -652,6 +652,51 @@ export default un.component({
       } catch (e) {}
     },
 
+    async handleViewTask(row) {
+      const loading = this.$loading({
+        lock: true,
+        text: this.$t('exporting')||('正在导出')
+      })
+
+      try{
+        const params = {
+          taskId: row.taskId
+        }
+
+        const response = await this.viewTask(params)
+
+        if(response.code === '0' && response.result&& response.result.list && response.result.list.length>0 ){  
+            const fileInfo = response.result.list[0]
+            const {key,fileName,userId} = fileInfo
+
+            if(!key || fileName){
+              this.$message.warning(this.$t('noAttachment') || '没有可下载的附件')
+              return
+            }
+
+            const downloadUrl = '/obs/downLoadDspFile='+encodeURIComponent(key)+'&fileName='+encodeURIComponent(fileName)+'&userId='+encodeURIComponent(userId || '')
+
+            const link = document .createElement('a')
+            link.href = downloadUrl
+            link.download - fileName
+            link.style.display = 'none'
+            document.body.appendChild(link)
+            link.click
+            document.body.removeChild(link) 
+          } else {
+            this.$message.warning(this.$t('noAttachment') || '没有可下载的附件')
+          }
+      }catch(e){
+        if(e !== 'cancel' && e !== 'close' ){
+          this.$message.warning(e.message || this.$t('viewTaskFailed')||'查看任务失败')
+        }
+      }finally{
+        loading.close()
+      }
+    },
+
+
+
     //导出excel
     async exportToExcel(tab){
       const loading = this.$loading({
@@ -662,13 +707,10 @@ export default un.component({
         try {
           //获取当前tab的查询条件
           const tabState = this[tab]
-          // 处理resrv1：空字符串转为null（有效），'1'保持不变（无效）
-          const resrv1Value = tabState.queryForm.resrv1 === '' ? null : tabState.queryForm.resrv1
-          
           const params = {
             tableName: tabState.queryForm.tableName,
             belongLine: tabState.queryForm.belongLine,
-            resrv1: resrv1Value,
+            resrv1: tabState.queryForm.resrv1,
             ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
               startDate: tabState.queryForm.date[0],
               endDate: tabState.queryForm.date[1]
@@ -697,7 +739,7 @@ export default un.component({
     'global': ['gotoPage', 'showMessage']
   },
     actions: {
-      'self': [ 'getProcessTodeal','getMySubmissions','getFlowsToMe','getProcessedTasks','deleteTask','approveFlowTask','exportExcelData']
+      'self': [ 'getProcessTodeal','getMySubmissions','getFlowsToMe','getProcessedTasks','deleteTask','approveFlowTask','exportExcelData','viewTask']
     }
 }, {
   mName: 'agencyTask',
