@@ -12,8 +12,7 @@ const createTabState = () => ({
   queryForm: {
     tableName: '',
     belongLine:'',
-    date: '',
-    resrv1:''
+    date: ''
   },
   tableOptions:[],
   lineOptions:[]
@@ -226,6 +225,33 @@ const actions = {
       }
     },
 
+    //任务审核驳回
+    async rejectFlowTask({ commit }, payload) {
+
+      try {
+        const res = await un.post('/task/info/reject', payload);
+        const json = await res.json();
+        
+        // 根据返回码处理结果
+        if (json.code === '0') {
+          return json; // 返回成功结果
+        } else {
+          throw new Error(json.msg || this.$t('rejectFailed'));
+        }
+      } catch (e) {
+        commit(mutationTypes.SHOW_MESSAGE, {
+          dialogType: 'confirm',
+          params: {
+            title: un.i18n.toLocale('error', state.language),
+            message: e.message,
+            type: 'error',
+            showCancelButton: false
+          }
+        }, { root: true });
+        throw e;
+      }
+    },
+
     //查看任务附件信息
     async viewTask({commit,state},payload){
       try{
@@ -304,7 +330,7 @@ const actions = {
     },
   
   resetQueryForm({ commit }, { tab }) {
-    commit(`${tab}QueryForm`, { tableName: '', belongLine: '',date: '' ,resrv1:''})
+    commit(`${tab}QueryForm`, { tableName: '', belongLine: '',date: ''})
   },
   
   handleSizeChange({ commit }, { tab, size }) {

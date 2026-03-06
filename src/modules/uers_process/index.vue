@@ -116,7 +116,10 @@
 
           <un-table-column :label="$t('operation')" width="140" fixed="right" align="center">
             <template #default="{ row }">
-              <un-button type="text" @click="approveFlow(row)">{{ $t('approval') }}</un-button>
+              <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                <un-button type="text" @click="approveFlow(row)">{{ $t('approval') }}</un-button>
+                <un-button type="text" @click="rejectFlow(row)">{{ $t('reject') }}</un-button>
+              </div>             
             </template>
           </un-table-column>
         </un-table>
@@ -359,22 +362,10 @@ const QueryForm = {
         />
       </un-form-item>
 
-      <un-form-item :label="$t('dataStatus')">
-        <un-select
-          v-model = "form.resrv1"
-          :placeholder="$t('dataStatus')"
-          class="form-input">
-            <un-option :label="$t('valid')" :value="''"></un-option>
-            <un-option :label="$t('invalid')" :value="'1'"></un-option>
-        </un-select>   
-      </un-form-item>
-
       <un-form-item>
         <un-button type="primary" class="query-button" @click="$emit('submit')">{{ $t('query') }}</un-button>
-        <un-button class="query-button" @click="form.tableName = ''; form.belongLine = ''; form.date = ''; form.resrv1 = ''; $emit('reset')">{{ $t('reset') }}</un-button>
         <un-button type="success" class="query-button" @click="$emit('export')">{{ $t('exportExcel') }}</un-button>
       </un-form-item>
-
     </un-form>
   `
 }
@@ -641,15 +632,49 @@ export default un.component({
     
     async rejectFlow(row) {
       try {
-        await this.$confirm(this.$t('confirmReject'), this.$t('prompt'), {
+        const {value: comment} = await this.$prompt(this.$t('rejectCommentPrompt'),this.$t('confirmReject'),{
           confirmButtonText: this.$t('confirm'),
           cancelButtonText: this.$t('cancel'),
-          type: 'warning'
-        })
+          inputType: 'textarea',
+          inputPlaceholder : this.$t('rejectCommentPromptPlaceHolder'),
+          inputValidator: (value) => {
+            if(!value || value.trim() === ''){
+              return this.$t('rejectCommentRequired')
+            }
+            if(value.length > 1000){
+              return this.$t('rejectCommentTooLong')
+            }
+            return true;
+          },
+          inputErrorMessage:this.$t('rejectCommentRequired')
+        });
+
+        // 构建驳回参数
+        const rejectFlowParams = {
+          taskId: row.taskId,
+          belongLine: row.belongLine,
+          startTime: row.startTime,
+          currentNode:row.currentNode,
+          approveBranch:row.approveBranch,
+          applyBranch:row.applyBranch,
+          comment:comment.trim()
+        }; 
+
         // 调用驳回API
-        this.$message.success(this.$t('rejectSuccess'))
-        this.fetchData('flowToMe')
-      } catch (e) {}
+        const response = await this.rejectFlowTask(rejectFlowParams);
+
+        if (response.code === '0') {
+          this.$message.success(this.$t('rejectSuccess'));
+          this.fetchData('flowToMe'); // 刷新表格数据
+        } else {
+          this.$message.error(response.msg || this.$t('rejectFailed'));
+        }
+      } catch (e) {
+        // 用户取消时不显示错误
+        if (e !== 'cancel' && e !== 'close') {
+          this.$message.error(e.message || this.$t('rejectFailed'));
+        }
+      }
     },
 
     async handleViewTask(row) {
@@ -710,7 +735,6 @@ export default un.component({
           const params = {
             tableName: tabState.queryForm.tableName,
             belongLine: tabState.queryForm.belongLine,
-            resrv1: tabState.queryForm.resrv1,
             ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
               startDate: tabState.queryForm.date[0],
               endDate: tabState.queryForm.date[1]
@@ -739,7 +763,7 @@ export default un.component({
     'global': ['gotoPage', 'showMessage']
   },
     actions: {
-      'self': [ 'getProcessTodeal','getMySubmissions','getFlowsToMe','getProcessedTasks','deleteTask','approveFlowTask','exportExcelData','viewTask']
+      'self': [ 'getProcessTodeal','getMySubmissions','getFlowsToMe','getProcessedTasks','deleteTask','approveFlowTask','rejectFlowTask','exportExcelData','viewTask']
     }
 }, {
   mName: 'agencyTask',
