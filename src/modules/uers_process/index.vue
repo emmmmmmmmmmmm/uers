@@ -333,7 +333,7 @@ const QueryForm = {
           <un-option
             v-for="item in taskOptions"
             :key="item.value"
-            :lable="item.label"
+            :label="item.label"
             :value="item.value">
           </un-option> 
         </un-select>
@@ -351,7 +351,7 @@ const QueryForm = {
           <un-option
             v-for="item in tableOptions"
             :key="item.value"
-            :lable="item.label"
+            :label="item.label"
             :value="item.value">
           </un-option>  
         </un-select>                
@@ -369,7 +369,7 @@ const QueryForm = {
           <un-option
             v-for="item in lineOptions"
             :key="item.value"
-            :lable="item.label"
+            :label="item.label"
             :value="item.value">
           </un-option> 
         </un-select>
@@ -382,11 +382,11 @@ const QueryForm = {
           class="form-input"       
           clearable>
             <un-option
-              :lable="$t('inProcess')"
+              :label="$t('inProcess')"
               :value="1">
             </un-option> 
             <un-option
-              :lable="$t('completed')"
+              :label="$t('completed')"
               :value="2">
             </un-option> 
         </un-select>
