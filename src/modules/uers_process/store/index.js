@@ -31,6 +31,8 @@ const state = {
   currentBranch: { procId: '' }
 }
 
+state.todeal.queryForm.taskStatus = '1'
+
 const createTabMutations = (prefix) => ({
   [`${prefix}Loading`](state, payload) {
     state[prefix].loading = payload
@@ -346,7 +348,13 @@ const actions = {
     },
   
   resetQueryForm({ commit }, { tab }) {
-    commit(`${tab}QueryForm`, { taskId:'', tableName: '', belongLine: '',taskStatus: '', date: ''})
+    commit(`${tab}QueryForm`, {
+      taskId:'',
+      tableName: '',
+      belongLine: '',
+      taskStatus: tab === 'todeal' ? '1' : '',
+      date: ''
+    })
   },
   
   handleSizeChange({ commit }, { tab, size }) {

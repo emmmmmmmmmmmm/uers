@@ -383,11 +383,11 @@ const QueryForm = {
           clearable>
             <un-option
               :label="$t('inProcess')"
-              :value="1">
+              value="1">
             </un-option> 
             <un-option
               :label="$t('completed')"
-              :value="2">
+              value="2">
             </un-option> 
         </un-select>
     </un-form-item> 
