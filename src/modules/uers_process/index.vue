@@ -66,7 +66,7 @@
       </un-tab-pane>    
 
 
-      <!-- 待处理任务  -->
+      <!-- 待处理任务 -->
       <un-tab-pane :label="$t('toDealTask')" name="todeal">
         <query-form 
           :form="todeal.queryForm" 
@@ -364,6 +364,7 @@ const QueryForm = {
 
       <un-form-item>
         <un-button type="primary" class="query-button" @click="$emit('submit')">{{ $t('query') }}</un-button>
+        <un-button class="query-button" @click="form.tableName = ''; form.belongLine = ''; form.date = '';  $emit('reset')">{{ $t('reset') }}</un-button>
         <un-button type="success" class="query-button" @click="$emit('export')">{{ $t('exportExcel') }}</un-button>
       </un-form-item>
     </un-form>
