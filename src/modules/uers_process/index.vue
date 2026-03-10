@@ -6,6 +6,7 @@
         <un-tab-pane :label="$t('taskProcessed')" name="processed">
         <query-form 
           :form="processed.queryForm" 
+          :task-options="processed.taskOptions"
           :table-options="processed.tableOptions"
           :line-options="processed.lineOptions"
           @reset="resetQueryForm('processed')" 
@@ -70,6 +71,7 @@
       <un-tab-pane :label="$t('toDealTask')" name="todeal">
         <query-form 
           :form="todeal.queryForm" 
+          :task-options="todeal.taskOptions"
           :table-options="todeal.tableOptions"
           :line-options="todeal.lineOptions"
           @reset="resetQueryForm('todeal')" 
@@ -138,6 +140,7 @@
       <un-tab-pane :label="$t('mySubmission')" name="mySubmission">
         <query-form 
           :form="mySubmission.queryForm" 
+          :task-options="mySubmission.taskOptions"
           :table-options="mySubmission.tableOptions"
           :line-options="mySubmission.lineOptions"
           @reset="resetQueryForm('mySubmission')" 
@@ -210,6 +213,7 @@
       <un-tab-pane :label="$t('flowToMe')" name="flowToMe">
         <query-form 
           :form="flowToMe.queryForm" 
+          :task-options="flowToMe.taskOptions"
           :table-options="flowToMe.tableOptions"
           :line-options="flowToMe.lineOptions"
           @reset="resetQueryForm('flowToMe')" 
@@ -300,6 +304,10 @@ const PaginationFooter = {
 const QueryForm = {
   props: { 
     form: Object ,
+    taskOptions: {
+      type: Array,
+      default: () => []
+    },
     tableOptions :{
       type:Array,
       default:()=>[]
@@ -312,6 +320,24 @@ const QueryForm = {
 
   template: `
     <un-form :model="form" class="query-form" :inline="true">
+
+    <un-form-item :label="$t('taskId')">
+        <un-select 
+          v-model="form.taskId" 
+          :placeholder="$t('taskId')" 
+          class="form-input"
+          filterable
+          allow-create
+          default-first-option
+          clearable>
+          <un-option
+            v-for="item in taskOptions"
+            :key="item.value"
+            :lable="item.label"
+            :value="item.value">
+          </un-option>  
+        </un-select>                
+    </un-form-item>
 
     <un-form-item :label="$t('tableName')">
         <un-select 
@@ -364,7 +390,7 @@ const QueryForm = {
 
       <un-form-item>
         <un-button type="primary" class="query-button" @click="$emit('submit')">{{ $t('query') }}</un-button>
-        <un-button class="query-button" @click="form.tableName = ''; form.belongLine = ''; form.date = '';  $emit('reset')">{{ $t('reset') }}</un-button>
+        <un-button class="query-button" @click="form.taskId = ''; form.tableName = ''; form.belongLine = ''; form.date = ''; $emit('reset')">{{ $t('reset') }}</un-button>
         <un-button type="success" class="query-button" @click="$emit('export')">{{ $t('exportExcel') }}</un-button>
       </un-form-item>
     </un-form>
@@ -734,6 +760,7 @@ export default un.component({
           //获取当前tab的查询条件
           const tabState = this[tab]
           const params = {
+            taskId: tabState.queryForm.taskId,
             tableName: tabState.queryForm.tableName,
             belongLine: tabState.queryForm.belongLine,
             ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
