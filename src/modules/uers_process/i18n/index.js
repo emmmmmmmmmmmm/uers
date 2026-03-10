@@ -75,6 +75,8 @@ module.exports = {
 		"dataStatus":"数据状态",
 		"valid":"有效",
 		"invalid":"无效",
+		"taskStatusFilter":"任务状态",
+		"all":"全部",
 		deleteDisabled:{
 			"review":"当前任务处于复核节点，不可删除",
 			"initialApproval":"当前任务处于初始审核节点，不可删除",
@@ -161,6 +163,8 @@ module.exports = {
 		"dataStatus":"Data Status",
 		"valid":"Valid",
 		"invalid":"Invalid",
+		'taskStatusFilter':'Task Status',
+		'all':'All',
 		deleteDisabled:{
 			"review":"Current task is in Review stage,cannot be deleted",
 			"initialApproval":"Current task is in Initial stage,cannot be deleted",
