@@ -12,8 +12,7 @@ const createTabState = () => ({
   queryForm: {
     tableName: '',
     belongLine:'',
-    date: '',
-    taskStatus: ''
+    date: ''
   },
   tableOptions:[],
   lineOptions:[]
@@ -331,7 +330,7 @@ const actions = {
     },
   
   resetQueryForm({ commit }, { tab }) {
-    commit(`${tab}QueryForm`, { tableName: '', belongLine: '',date: '', taskStatus: ''})
+    commit(`${tab}QueryForm`, { tableName: '', belongLine: '',date: ''})
   },
   
   handleSizeChange({ commit }, { tab, size }) {
