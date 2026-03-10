@@ -304,9 +304,9 @@ const PaginationFooter = {
 const QueryForm = {
   props: { 
     form: Object ,
-    taskOptions: {
-      type: Array,
-      default: () => []
+    taskOptions :{
+      type:Array,
+      default:()=>[]
     },
     tableOptions :{
       type:Array,
@@ -321,7 +321,7 @@ const QueryForm = {
   template: `
     <un-form :model="form" class="query-form" :inline="true">
 
-    <un-form-item :label="$t('taskId')">
+      <un-form-item :label="$t('taskId')">
         <un-select 
           v-model="form.taskId" 
           :placeholder="$t('taskId')" 
@@ -335,9 +335,9 @@ const QueryForm = {
             :key="item.value"
             :lable="item.label"
             :value="item.value">
-          </un-option>  
-        </un-select>                
-    </un-form-item>
+          </un-option> 
+        </un-select>
+    </un-form-item>   
 
     <un-form-item :label="$t('tableName')">
         <un-select 
@@ -375,6 +375,23 @@ const QueryForm = {
         </un-select>
     </un-form-item> 
 
+    <un-form-item :label="$t('taskStatus')">
+        <un-select 
+          v-model="form.taskStatus" 
+          :placeholder="$t('taskStatus')" 
+          class="form-input"       
+          clearable>
+            <un-option
+              :lable="$t('inProcess')"
+              :value="1">
+            </un-option> 
+            <un-option
+              :lable="$t('completed')"
+              :value="2">
+            </un-option> 
+        </un-select>
+    </un-form-item> 
+
       <un-form-item :label="$t('date')">
         <un-date-picker
           class="date-input"
@@ -390,7 +407,7 @@ const QueryForm = {
 
       <un-form-item>
         <un-button type="primary" class="query-button" @click="$emit('submit')">{{ $t('query') }}</un-button>
-        <un-button class="query-button" @click="form.taskId = ''; form.tableName = ''; form.belongLine = ''; form.date = ''; $emit('reset')">{{ $t('reset') }}</un-button>
+        <un-button class="query-button" @click="form.tableName = ''; form.belongLine = ''; form.date = ''; form.taskId = ''; form.taskStatus = ''; $emit('reset')">{{ $t('reset') }}</un-button>
         <un-button type="success" class="query-button" @click="$emit('export')">{{ $t('exportExcel') }}</un-button>
       </un-form-item>
     </un-form>
@@ -763,6 +780,7 @@ export default un.component({
             taskId: tabState.queryForm.taskId,
             tableName: tabState.queryForm.tableName,
             belongLine: tabState.queryForm.belongLine,
+            taskStatus: tabState.queryForm.taskStatus,
             ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
               startDate: tabState.queryForm.date[0],
               endDate: tabState.queryForm.date[1]

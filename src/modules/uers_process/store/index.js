@@ -10,9 +10,10 @@ const createTabState = () => ({
   currentPage: 1,
   fetchNum: 50,
   queryForm: {
-    taskId: '',
+    taskId:'',
     tableName: '',
     belongLine:'',
+    taskStatus:'',
     date: ''
   },
   taskOptions:[],
@@ -54,12 +55,13 @@ const createTabMutations = (prefix) => ({
     state[prefix].cacheData.push(...payload.list)
     state[prefix].totalNum = payload.totalNum
 
-    //从数据中提取唯一的taskId、tableName和belongLine作为下拉选项
+    //从数据中提取唯一的tableName和belongLine作为下拉选项
     if(payload.list && payload.list.length > 0){
+      //提取所有的唯一taskId
       const taskIds = [...new Set(
         state[prefix].cacheData
           .map(item => item.taskId)
-          .filter(taskId => taskId)
+          .filter(taskId => taskId) //过滤空值
       )]
 
       //提取所有的唯一tableName
@@ -77,7 +79,7 @@ const createTabMutations = (prefix) => ({
     )]
 
     //一次性生成所有选项，避免中间状态
-    const newTaskOptions = taskIds.map(taskId => ({
+    const newtaskOptions = taskIds.map(taskId => ({
       label:taskId,
       value:taskId
     }))
@@ -93,7 +95,7 @@ const createTabMutations = (prefix) => ({
     }))
 
     //赋值
-    state[prefix].taskOptions = newTaskOptions
+    state[prefix].taskOptions = newtaskOptions
     state[prefix].tableOptions = newTableOptions
     state[prefix].lineOptions = newLineOptions
     }
@@ -344,7 +346,7 @@ const actions = {
     },
   
   resetQueryForm({ commit }, { tab }) {
-    commit(`${tab}QueryForm`, { taskId: '', tableName: '', belongLine: '', date: ''})
+    commit(`${tab}QueryForm`, { taskId:'', tableName: '', belongLine: '',taskStatus: '', date: ''})
   },
   
   handleSizeChange({ commit }, { tab, size }) {
