@@ -348,11 +348,11 @@ const actions = {
     },
   
   resetQueryForm({ commit }, { tab }) {
-    commit(`${tab}QueryForm`, {
-      taskId:'',
-      tableName: '',
+    commit(`${tab}QueryForm`, { 
+      taskId:'', 
+      tableName: '', 
       belongLine: '',
-      taskStatus: tab === 'todeal' ? '1' : '',
+      taskStatus: tab === 'toDeal'?'1':'',  //待处理的任务默认选中流程中
       date: ''
     })
   },
