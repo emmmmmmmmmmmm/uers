@@ -785,6 +785,8 @@ export default un.component({
           }).catch((e) => {
             console.log("下载失败",e);
             this.$message.warning('下载失败，请联系管理员！');
+        }).finally(() => {
+            loading.close();
         })    
     },
 
