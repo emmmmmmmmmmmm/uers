@@ -66,6 +66,9 @@ module.exports = {
 		"rejectCommentTooLong":"驳回意见不能超过1000字",
 		"rejectSuccess":"驳回成功",
 		"rejectFailed":"驳回失败",
+		rejectDisabled:{
+			"handling":"经办状态不可驳回"
+		},
 		"prompt":"提示",
 		"NO.":"序号",
 		"exportExcel":"导出excel",
@@ -152,6 +155,9 @@ module.exports = {
 		"rejectCommentTooLong":"Reject comment context exceed 1000 characters",
 		"rejectSuccess":"Reject Success",
 		"rejectFailed":"Reject Failed",
+		rejectDisabled:{
+			"handling":"Handling status cannot be rejected"
+		},
 		"prompt":"Prompt",
 		"NO.":"NO.",
 		"exportExcel":"exportExcel",

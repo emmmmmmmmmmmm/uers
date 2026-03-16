@@ -120,7 +120,21 @@
             <template #default="{ row }">
               <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
                 <un-button type="text" @click="approveFlow(row)">{{ $t('approval') }}</un-button>
-                <un-button type="text" @click="rejectFlow(row)">{{ $t('reject') }}</un-button>
+                <un-tooltip
+                  :content="getRejectTooltip(row)"
+                  :disabled="row.currentNode !== '1'"
+                  placement="top"
+                >
+                  <span>
+                    <un-button
+                      type="text"
+                      :disabled="row.currentNode === '1'"
+                      @click="rejectFlow(row)"
+                    >
+                      {{ $t('reject') }}
+                    </un-button>
+                  </span>
+                </un-tooltip>
               </div>             
             </template>
           </un-table-column>
@@ -524,6 +538,13 @@ export default un.component({
       return this.getDeleteWarningMessage(row.currentNode);
     },
 
+    getRejectTooltip(row){
+      if(row.currentNode === '1'){
+        return this.$t('rejectDisabled.handling');
+      }
+      return '';
+    },
+
     async approval(row) {
       try {
         // 确认对话框
@@ -676,6 +697,11 @@ export default un.component({
     
     async rejectFlow(row) {
       try {
+        if(row.currentNode === '1'){
+          this.$message.warning(this.$t('rejectDisabled.handling'));
+          return;
+        }
+
         const {value: comment} = await this.$prompt(this.$t('rejectCommentPrompt'),this.$t('confirmReject'),{
           confirmButtonText: this.$t('confirm'),
           cancelButtonText: this.$t('cancel'),
@@ -728,33 +754,20 @@ export default un.component({
       })
 
       try{
-        const params = {
-          taskId: row.taskId
+        const { taskFile, TaskName } = row
+
+        if (!taskFile || !TaskName) {
+          this.$message.warning(this.$t('noAttachment') || '没有可下载的附件')
+          return
         }
 
-        const response = await this.viewTask(params)
-
-        if(response.code === '0' && response.result&& response.result.list && response.result.list.length>0 ){  
-            const fileInfo = response.result.list[0]
-            const {key,fileName,userId} = fileInfo
-
-            if(!key || fileName){
-              this.$message.warning(this.$t('noAttachment') || '没有可下载的附件')
-              return
-            }
-
-            const downloadUrl = '/obs/downLoadDspFile='+encodeURIComponent(key)+'&fileName='+encodeURIComponent(fileName)+'&userId='+encodeURIComponent(userId || '')
-
-            const link = document .createElement('a')
-            link.href = downloadUrl
-            link.download - fileName
-            link.style.display = 'none'
-            document.body.appendChild(link)
-            link.click
-            document.body.removeChild(link) 
-          } else {
-            this.$message.warning(this.$t('noAttachment') || '没有可下载的附件')
-          }
+        const downloadUrl = `/task/viewTask?taskFile=${encodeURIComponent(taskFile)}&TaskName=${encodeURIComponent(TaskName)}`
+        const link = document.createElement('a')
+        link.href = downloadUrl
+        link.style.display = 'none'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
       }catch(e){
         if(e !== 'cancel' && e !== 'close' ){
           this.$message.warning(e.message || this.$t('viewTaskFailed')||'查看任务失败')
