@@ -294,58 +294,54 @@ const actions = {
       }
     },
 
-    //导出excel(后端返回加密文件)
+    //导出excel
     async exportExcelData({ commit,state },{tab,params}){
-      try{
-        const res = await un.post('/task/export',{
-          ...params,
-          type: tab
+
+        alert(JSON.stringify(params))
+         alert(JSON.stringify(tab))
+          
+          un.getFile('/task/export',
+            {
+              type:tab,
+              taskId:params.taskId,
+              tableName:params.tableName,
+              belongLine:params.belongLine,
+              taskStatus:params.taskStatus,
+              startDate:params.startDate,
+              endDate:params.endDate,
+            }).then((res) => {
+            const content =  res.headers.get('Content-Disposition');
+            let filename = '任务列表.xlsx';
+            if(content){
+              const utf8Match  = content.match(/filename\*=UTF-8''([^;]+)/i);
+              if(utf8Match){
+                filename = decodeURIComponent(utf8Match[1]);
+              }else{
+                const fileMatch  = content.match(/filename="?([^";]+)"?/i);
+                if(fileMatch){
+                  filename = fileMatch[1];
+                }
+              }
+            }
+            res.blob().then((blob)=>{
+              const blob1 =blob instanceof Blob ? blob: new Blob([blob],{type:'application/octet-stream'});
+              const blobUrl = window.URL.createObjectURL(blob1);
+              let link =document.createElement('a');
+              link.href = blobUrl;
+              link.download = filename;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+
+              URL.revokeObjectURL(blobUrl);
+            })
+
+          }).catch((e) => {
+            console.log("下载失败",e);
+            this.$message.warning('下载失败，请联系管理员！');
         })
+     },
 
-        const json = await res.resJSON
-
-        if(json.code !== '0'){
-          throw new Error(json.msg || '导出失败')
-        }
-
-        const exportData = json.result
-        if(!exportData || exportData.length === 0){
-          throw new Error('导出数据为空')
-        }
-
-        const firstItem = exportData[0]
-        const{ key,fileName,userId } = firstItem
-
-        if(!key || !fileName|| !userId){
-          throw new Error('导出接口返回的数据格式错误')
-        }
-
-        const downloadUrl = '/obs/downLoadDspFile='+encodeURIComponent(key)+'&fileName='+encodeURIComponent(fileName)+'&userId='+encodeURIComponent(userId || '')
-        
-        const link = document .createElement('a')
-        link.href = downloadUrl
-        link.download - fileName
-        link.style.display = 'none'
-        document.body.appendChild(link)
-        link.click
-        document.body.removeChild(link) 
-
-        return { code : '0' }
-
-      } catch (e){
-
-        commit(mutationTypes.SHOW_MESSAGE,{
-          dialogType:'confirm',
-          params:{
-            title:un.i18n.toLocale('error',state.language),
-            message:e.message,
-            type:'error',
-            showCancelButton : false
-          }
-        },{ root:true})
-        throw e
-      }
-    },
   
   resetQueryForm({ commit }, { tab }) {
     commit(`${tab}QueryForm`, { 

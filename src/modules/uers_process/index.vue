@@ -121,20 +121,20 @@
               <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
                 <un-button type="text" @click="approveFlow(row)">{{ $t('approval') }}</un-button>
                 <un-tooltip
-                  :content="getRejectTooltip(row)"
-                  :disabled="row.currentNode !== '1'"
-                  placement="top"
+                  :content = "getRejecttooltip(row)"
+                  :disabled = "row.currentNode !== '1' "
+                  placeholder = "top"
                 >
-                  <span>
-                    <un-button
-                      type="text"
-                      :disabled="row.currentNode === '1'"
-                      @click="rejectFlow(row)"
-                    >
-                      {{ $t('reject') }}
-                    </un-button>
-                  </span>
-                </un-tooltip>
+                <span>
+                  <un-button
+                    type = "text"
+                    :disabled = "row.currentNode === '1' "
+                    @click="rejectFlow(row)"
+                  >
+                    {{ $t('reject') }}
+                  </un-button>               
+                </span>
+                </un-tooltip> 
               </div>             
             </template>
           </un-table-column>
@@ -538,11 +538,11 @@ export default un.component({
       return this.getDeleteWarningMessage(row.currentNode);
     },
 
-    getRejectTooltip(row){
-      if(row.currentNode === '1'){
+    getRejecttooltip(row){
+      if(row.currentNode==='1'){
         return this.$t('rejectDisabled.handling');
       }
-      return '';
+      return '';;
     },
 
     async approval(row) {
@@ -697,10 +697,10 @@ export default un.component({
     
     async rejectFlow(row) {
       try {
-        if(row.currentNode === '1'){
-          this.$message.warning(this.$t('rejectDisabled.handling'));
-          return;
-        }
+            if(row.currentNode === '1'){
+              this.message.warning(this.$t('rejectDisabled.handling'));
+              return;
+            }
 
         const {value: comment} = await this.$prompt(this.$t('rejectCommentPrompt'),this.$t('confirmReject'),{
           confirmButtonText: this.$t('confirm'),
@@ -747,36 +747,46 @@ export default un.component({
       }
     },
 
-    async handleViewTask(row) {
+    handleViewTask(row) {
       const loading = this.$loading({
         lock: true,
         text: this.$t('exporting')||('正在导出')
-      })
+    })
+      console.log('handleViewTask.taskId=', row.taskId)
 
-      try{
-        const { taskFile, TaskName } = row
+          un.getFile('/task/viewTask',{taskId:row.taskId}).then((res) => {
+            const content =  res.headers.get('Content-Disposition');
+            console.log('handleViewTask.content=',JSON.stringify(content))
+            let filename = '补录详情.xlsx';
+            if(content){
+              const utf8Match  = content.match(/filename\*=UTF-8''([^;]+)/i);
+              if(utf8Match){
+                filename = decodeURIComponent(utf8Match[1]);
+              }else{
+                const fileMatch  = content.match(/filename="?([^";]+)"?/i);
+                if(fileMatch){
+                  filename = fileMatch[1];
+                }
+              }
+            }
+            res.blob().then((blob)=>{
+              const blob1 =blob instanceof Blob ? blob: new Blob([blob],{type:'application/octet-stream'});
+              const blobUrl = window.URL.createObjectURL(blob1);
+              let link =document.createElement('a');
+              link.href = blobUrl;
+              link.download = filename;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
 
-        if (!taskFile || !TaskName) {
-          this.$message.warning(this.$t('noAttachment') || '没有可下载的附件')
-          return
-        }
+              URL.revokeObjectURL(blobUrl);
+            })
 
-        const downloadUrl = `/task/viewTask?taskFile=${encodeURIComponent(taskFile)}&TaskName=${encodeURIComponent(TaskName)}`
-        const link = document.createElement('a')
-        link.href = downloadUrl
-        link.style.display = 'none'
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-      }catch(e){
-        if(e !== 'cancel' && e !== 'close' ){
-          this.$message.warning(e.message || this.$t('viewTaskFailed')||'查看任务失败')
-        }
-      }finally{
-        loading.close()
-      }
+          }).catch((e) => {
+            console.log("下载失败",e);
+            this.$message.warning('下载失败，请联系管理员！');
+        })    
     },
-
 
 
     //导出excel
