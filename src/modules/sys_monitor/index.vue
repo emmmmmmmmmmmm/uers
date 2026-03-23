@@ -143,12 +143,20 @@ export default un.component(
       async handleSearch(){
         this.setCurrentPage(1)
         this.loading = true
+        const startTime = Date.now()
         try {
           await this.getInfo({
             opStartDate: this.opStartDate,
             opEndDate: this.opEndDate
           })
         } finally {
+          const elapsed = Date.now() - startTime
+          const minDuration = 400
+
+          if (elapsed < minDuration) {
+            await new Promise(resolve => setTimeout(resolve, minDuration - elapsed))
+          }
+
           this.loading = false
         }
       },
