@@ -85,7 +85,7 @@ export default un.component(
           disabledDate:(time)=>{
             const currentDate = new Date(this.today + ' 00:00:00').getTime()
             const minDate = new Date(this.minStartDate + ' 00:00:00').getTime()
-            const endDate = this.opEndDate ? new Date(this.opEndDate + '00:00:00').getTime() : currentDate
+            const endDate = this.opEndDate ? new Date(this.opEndDate + ' 00:00:00').getTime() : currentDate
             return time.getTime() < minDate || time.getTime() > endDate
           }
         }  
@@ -94,7 +94,7 @@ export default un.component(
         return{
             disabledDate:(time)=>{
             const currentDate = new Date(this.today + ' 00:00:00').getTime()
-            const startDate = this.opStartDate ? new Date(this.opStartDate + '00:00:00').getTime() : new Date(this.minStartDate + '00:00:00').getTime()
+            const startDate = this.opStartDate ? new Date(this.opStartDate + ' 00:00:00').getTime() : new Date(this.minStartDate + ' 00:00:00').getTime()
             return time.getTime() < startDate || time.getTime() > currentDate
              }         
           }
@@ -131,7 +131,7 @@ export default un.component(
       },
       initDefaultDates(){
         this.opEndDate = this.today
-        this.opStartDate = this.formatDate(this.getOffsetMonthDate(new Date(),-5))
+        this.opStartDate = this.formatDate(this.getOffsetMonthDate(new Date(),-1))
       },
       handleSearch(){
         this.setCurrentPage(1)
