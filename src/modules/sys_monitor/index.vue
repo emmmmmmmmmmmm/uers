@@ -4,6 +4,7 @@
       <un-form inline>
         <un-form-item label="开始日期">
           <un-date-picker
+            :key="`start-${datePickerKey}`"
             v-model="opStartDate"
             value-format="yyyy-MM-dd"
             format="yyyy-MM-dd"
@@ -14,6 +15,7 @@
         </un-form-item>
         <un-form-item label="结束日期">
           <un-date-picker 
+            :key="`end-${datePickerKey}`"
             v-model="opEndDate"
             value-format="yyyy-MM-dd"
             format="yyyy-MM-dd"
@@ -68,7 +70,8 @@ export default un.component(
     data () {
       return {
         opStartDate: '',
-        opEndDate: ''
+        opEndDate: '',
+        datePickerKey: 0
       }
     },
     computed: {
@@ -142,6 +145,7 @@ export default un.component(
       },
       resetSearch(){
         this.initDefaultDates()
+        this.datePickerKey += 1
         this.handleSearch()
       },
       handleSizeChange (size) {
