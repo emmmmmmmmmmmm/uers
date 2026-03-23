@@ -13,7 +13,7 @@
           />
         </un-form-item>
         <un-form-item label="结束日期">
-          <un-date-picker
+          <un-date-picker 
             v-model="opEndDate"
             value-format="yyyy-MM-dd"
             format="yyyy-MM-dd"
@@ -85,7 +85,7 @@ export default un.component(
           disabledDate:(time)=>{
             const currentDate = new Date(this.today + ' 00:00:00').getTime()
             const minDate = new Date(this.minStartDate + ' 00:00:00').getTime()
-            const endDate = this.opEndDate ? new Date(this.opEndDate + ' 00:00:00').getTime() : currentDate
+            const endDate = this.opEndDate ? new Date(this.opEndDate + '00:00:00').getTime() : currentDate
             return time.getTime() < minDate || time.getTime() > endDate
           }
         }  
@@ -94,7 +94,7 @@ export default un.component(
         return{
             disabledDate:(time)=>{
             const currentDate = new Date(this.today + ' 00:00:00').getTime()
-            const startDate = this.opStartDate ? new Date(this.opStartDate + ' 00:00:00').getTime() : new Date(this.minStartDate + ' 00:00:00').getTime()
+            const startDate = this.opStartDate ? new Date(this.opStartDate + '00:00:00').getTime() : new Date(this.minStartDate + '00:00:00').getTime()
             return time.getTime() < startDate || time.getTime() > currentDate
              }         
           }
@@ -120,24 +120,18 @@ export default un.component(
         const day = `${date.getDate()}`.padStart(2,0)
         return `${year} - ${month} - ${day}`
       },
-      getOffsetMonthDate (baseDate, offsetMonth) {
+      getOffsetMonthDate(baseDate,offsetMonth){
         const date = new Date(baseDate)
         const day = date.getDate()
         date.setDate(1)
         date.setMonth(date.getMonth() + offsetMonth)
-        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
-        date.setDate(Math.min(day, lastDay))
+        const lastDay = new Date(date.getFullYear(),date.getMonth() + 1,0).getDate()
+        date.setDate(Math.min(day,lastDay))
         return date
       },
-      getSearchDateValue (date) {
-        const year = date.getFullYear()
-        const month = `${date.getMonth() + 1}`.padStart(2, '0')
-        const day = `${date.getDate()}`.padStart(2, '0')
-        return `${year}-${month}-${day}`
-      },
-      initDefaultDates () {
-        this.opEndDate = this.getSearchDateValue(new Date())
-        this.opStartDate = this.getSearchDateValue(this.getOffsetMonthDate(new Date(), -1))
+      initDefaultDates(){
+        this.opEndDate = this.today
+        this.opStartDate = this.formatDate(this.getOffsetMonthDate(new Date(),-5))
       },
       handleSearch(){
         this.setCurrentPage(1)
@@ -146,8 +140,8 @@ export default un.component(
           opEndDate: this.opEndDate
         })
       },
-      resetSearch () {
-        this.initDefaultDates()
+      resetSearch(){
+        this.initDefaulDates()
         this.handleSearch()
       },
       handleSizeChange (size) {
