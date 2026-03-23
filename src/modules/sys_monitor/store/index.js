@@ -26,8 +26,9 @@ const mutations = {
     state.logInfo2 = payload
   },
   setLog(state, payload) {
-    state.cache = payload
-    state.totalNum = payload.length
+    const list = Array.isArray(payload) ? payload : []
+    state.cache = list
+    state.totalNum = list.length
     state.currentPage = 1
   },
   setPageSize(state, payload) {
@@ -47,10 +48,10 @@ const mutations = {
  */
 const actions = {
   getInfo ({commit, state, rootState, dispatch}, payload) {
-    un.post('/sys/sysLog', {}).then(res => res.json()).then((json) => {
-      commit('queryDetailTraceXX', "获取日志")
+    un.post('/sys/sysLog', payload || {}).then(res => res.json()).then((json) => {
+      commit('queryDetailTraceXX', '获取日志')
       commit('setLog', json.result)
-      commit('setCurTableData', {start:0, end:10})
+      commit('setCurTableData', { start:0, end: state.pageSize})
     }).catch(err => { console.log('=====' + err) })
   },
   getInfo2 ({commit, state, rootState, dispatch}, payload) {
