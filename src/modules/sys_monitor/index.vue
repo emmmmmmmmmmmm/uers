@@ -29,33 +29,33 @@
       </un-form>
     </div>
     <un-table
-      :data="tableData"
-      style="width: 100%"
-      stripe
-      :default-sort="{ prop: 'op_time', order: 'descending' }"
-      :row-style="{ height: '40px' }"
-      :header-row-style="{ height: '40px' }"
-      :class="['limitmaxheight', { isBorder: tableData.length === 0 }]"
-    >
-      <un-table-column prop="op_time" label="日期" sortable width="180" align="center"></un-table-column>
-      <un-table-column prop="op_user" label="操作人ID" sortable width="180" align="center"></un-table-column>
-      <un-table-column prop="name" label="操作人姓名" sortable width="180" align="center"></un-table-column>
-      <un-table-column prop="op_detail" label="日志内容" align="center"></un-table-column>
-    </un-table>
-    <div class="pageDiv">
-      <div class="totalNum">总共{{ totalNum }}个项目</div>
-      <un-pagination
-        background
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-        :current-page="curPage"
-        :page-sizes="[10, 20, 30, 40]"
-        :page-size="pageSize"
-        layout="prev, pager, next, sizes, jumper"
-        :total="totalNum"
+        :data="tableData"
+        style="width: 100%"
+        stripe
+        :default-sort="{prop: 'op_time', order: 'descending'}"
+        :row-style="{'height':'40px'}"
+        :header-row-style="{'height':'40px'}"
+        :class="['limitmaxheight',{isBorder: tableData.length === 0}]"
       >
-      </un-pagination>
-    </div>
+        <un-table-column prop="op_time" label="日期" sortable width="180" align="center"></un-table-column>
+        <un-table-column prop="op_user" label="操作人ID" sortable width="180" align="center"></un-table-column>
+        <un-table-column prop="name" label="操作人姓名" sortable width="180" align="center"></un-table-column>
+        <un-table-column prop="op_detail" label="日志内容" align="center"></un-table-column>
+      </un-table>
+      <div class="pageDiv">
+        <div class="totalNum">总共{{totalNum}}个项目</div>
+        <un-pagination
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="curPage"
+          :page-sizes="[10, 20, 30, 40]"
+          :page-size="pageSize"
+          layout="prev, pager, next, sizes, jumper"
+          :total="totalNum"
+          >
+        </un-pagination>
+      </div>
   </div>
 </template>
 
@@ -80,31 +80,31 @@ export default un.component(
           this.setCurrentPage(newVal)
         }
       },
-      startPickerOptions () {
-        return {
-          disabledDate: (time) => {
+      startPickerOptions(){
+        return{
+          disabledDate:(time)=>{
             const currentDate = new Date(this.today + ' 00:00:00').getTime()
             const minDate = new Date(this.minStartDate + ' 00:00:00').getTime()
             const endDate = this.opEndDate ? new Date(this.opEndDate + ' 00:00:00').getTime() : currentDate
             return time.getTime() < minDate || time.getTime() > endDate
           }
-        }
+        }  
       },
-      endPickerOptions () {
-        return {
-          disabledDate: (time) => {
+      endPickerOptions(){
+        return{
+            disabledDate:(time)=>{
             const currentDate = new Date(this.today + ' 00:00:00').getTime()
             const startDate = this.opStartDate ? new Date(this.opStartDate + ' 00:00:00').getTime() : new Date(this.minStartDate + ' 00:00:00').getTime()
             return time.getTime() < startDate || time.getTime() > currentDate
+             }         
           }
-        }
       },
-      today () {
+      today(){
         return this.formatDate(new Date())
-      },
-      minStartDate () {
-        return this.formatDate(this.getOffsetMonthDate(new Date(), -6))
-      }
+     },
+     minStartDate(){
+      return this.formatDate(this.getOffsetMonthDate(new Date(), -6))
+     }
     },
     created () {
       this.initDefaultDates()
@@ -114,34 +114,34 @@ export default un.component(
       formatter (row, column) {
         return row.address
       },
-      formatDate (date) {
+      formatDate(date){
         const year = date.getFullYear()
-        const month = `${date.getMonth() + 1}`.padStart(2, '0')
-        const day = `${date.getDate()}`.padStart(2, '0')
-        return `${year}-${month}-${day}`
+        const month = `${date.getMonth() + 1}`.padStart(2,'0')
+        const day = `${date.getDate()}`.padStart(2,0)
+        return `${year} - ${month} - ${day}`
       },
-      getOffsetMonthDate (baseDate, offsetMonth) {
+      getOffsetMonthDate(baseDate,offsetMonth){
         const date = new Date(baseDate)
         const day = date.getDate()
         date.setDate(1)
         date.setMonth(date.getMonth() + offsetMonth)
-        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate()
-        date.setDate(Math.min(day, lastDay))
+        const lastDay = new Date(date.getFullYear,date.getMonth + 1,0).getDate()
+        date.setDate(Math.min(day,lastDay))
         return date
       },
-      initDefaultDates () {
+      initDefaultDates(){
         this.opEndDate = this.today
-        this.opStartDate = this.formatDate(this.getOffsetMonthDate(new Date(), -5))
+        this.opStartDate = this.formatDate(this.getOffsetMonthDate(new Date(),-5))
       },
-      handleSearch () {
+      handleSearch(){
         this.setCurrentPage(1)
         this.getInfo({
           opStartDate: this.opStartDate,
           opEndDate: this.opEndDate
         })
       },
-      resetSearch () {
-        this.initDefaultDates()
+      resetSearch(){
+        this.initDefaulDates()
         this.handleSearch()
       },
       handleSizeChange (size) {
@@ -194,21 +194,21 @@ export default un.component(
 
 <style lang="scss">
 @media only screen and(min-height:801px) {
-  .limitmaxheight.un-table td, .limitmaxheight.un-table th {
+  .limitmaxheight.un-table td, .limitmaxheight.un-table th{
     padding: 0px;
   }
 }
 .sys-monitor-wrap {
-  .search-wrapper {
+  .search-wrapper{
     margin-bottom: 16px;
 
-    .un-form {
+    .un-form{
       display: flex;
       flex-wrap: wrap;
       align-items: center;
     }
 
-    .un-form-item {
+    .un-form-item{
       margin-bottom: 12px;
       margin-right: 16px;
     }
@@ -226,7 +226,7 @@ export default un.component(
     }
     .un-table {
       &.limitmaxheight {
-        td, th {
+        td,th{
           padding: 0;
         }
       }
@@ -270,27 +270,27 @@ export default un.component(
     }
   }
 }
-.pageDiv {
+.pageDiv{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  .totalNum {
+  .totalNum{
     font-size: 14px;
     color: #999999;
   }
   .un-pagination.is-background {
     margin-top: 16px;
-    .btn-next, .btn-prev, .un-pager li {
+    .btn-next, .btn-prev, .un-pager li{
       min-width: 28px;
       height: 28px;
       line-height: 28px;
     }
     .un-select {
       .un-input {
-        .un-input__inner {
+          .un-input__inner{
           line-height: 10px;
+          }
         }
-      }
     }
   }
 }
