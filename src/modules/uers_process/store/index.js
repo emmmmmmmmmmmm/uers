@@ -296,10 +296,7 @@ const actions = {
 
     //导出excel
     async exportExcelData({ commit,state },{tab,params}){
-
-        alert(JSON.stringify(params))
-         alert(JSON.stringify(tab))
-          
+        return new Promise((resolve, reject) => {
           un.getFile('/task/export',
             {
               type:tab,
@@ -334,13 +331,18 @@ const actions = {
               document.body.removeChild(link);
 
               URL.revokeObjectURL(blobUrl);
+              resolve();
+            }).catch((e) => {
+              console.log("下载失败",e);
+              reject(new Error('下载失败，请联系管理员！'));
             })
 
           }).catch((e) => {
             console.log("下载失败",e);
-            this.$message.warning('下载失败，请联系管理员！');
+            reject(new Error('下载失败，请联系管理员！'));
         })
-     },
+      })
+    },
 
   
   resetQueryForm({ commit }, { tab }) {

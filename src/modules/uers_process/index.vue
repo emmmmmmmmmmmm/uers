@@ -792,39 +792,58 @@ export default un.component({
 
 
     //导出excel
-    async exportToExcel(tab){
+    exportToExcel(tab){
       const loading = this.$loading({
           lock: true,
-          text: this.$t('exporting')||('正在导出')
+          text: this.$t('exporting')||(' 正在导出')
         })
 
-        try {
-          //获取当前tab的查询条件
-          const tabState = this[tab]
-          const params = {
-            taskId: tabState.queryForm.taskId,
-            tableName: tabState.queryForm.tableName,
-            belongLine: tabState.queryForm.belongLine,
-            taskStatus: tabState.queryForm.taskStatus,
-            ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
-              startDate: tabState.queryForm.date[0],
-              endDate: tabState.queryForm.date[1]
-            })
-          }
+      const tabState = this[tab]
+      const params = {
+        type: tab,
+        taskId: tabState.queryForm.taskId,
+        tableName: tabState.queryForm.tableName,
+        belongLine: tabState.queryForm.belongLine,
+        taskStatus: tabState.queryForm.taskStatus,
+        ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
+          startDate: tabState.queryForm.date[0],
+          endDate: tabState.queryForm.date[1]
+        })
+      }
 
-          //调用导出接口
-          const response = await this.exportExcelData({tab,params})
-
-          if(response && response.code === '0'){  
-            this.$message.success(this.$t('exportSuccess') || '导出成功')
+      un.getFile('/task/export', params).then((res) => {
+        const content = res.headers.get('Content-Disposition');
+        let filename = '任务列表.xlsx';
+        if(content){
+          const utf8Match  = content.match(/filename\*=UTF-8''([^;]+)/i);
+          if(utf8Match){
+            filename = decodeURIComponent(utf8Match[1]);
           }else{
-            this.$message.error(response.msg || this.$t('exportFailed') || '导出失败')
+            const fileMatch  = content.match(/filename="?([^";]+)"?/i);
+            if(fileMatch){
+              filename = fileMatch[1];
+            }
           }
-        }catch(e){
-          this.$message.error(e.message || this.$t('exportFailed') || '导出失败')
-        }finally{
-          loading.close()
         }
+        return res.blob().then((blob)=>{
+          const blob1 =blob instanceof Blob ? blob: new Blob([blob],{type:'application/octet-stream'});
+          const blobUrl = window.URL.createObjectURL(blob1);
+          let link =document.createElement('a');
+          link.href = blobUrl;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+
+          URL.revokeObjectURL(blobUrl);
+          this.$message.success(this.$t('exportSuccess') || '导出成功')
+        })
+      }).catch((e) => {
+        console.log("导出失败",e);
+        this.$message.error(this.$t('exportFailed') || '导出失败');
+      }).finally(() => {
+        loading.close()
+      })
     }
 
   }
