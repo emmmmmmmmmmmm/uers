@@ -48,11 +48,28 @@ const mutations = {
  */
 const actions = {
   getInfo ({commit, state, rootState, dispatch}, payload) {
-    un.post('/sys/sysLog', payload || {}).then(res => res.json()).then((json) => {
-      commit('queryDetailTraceXX', '获取日志')
-      commit('setLog', json.result)
-      commit('setCurTableData', { start:0, end: state.pageSize})
-    }).catch(err => { console.log('=====' + err) })
+    return un.post('/sys/sysLog', payload || {}).then(res => res.json()).then((json) => {
+      if (json.code === '0') {
+        commit('queryDetailTraceXX', '获取日志')
+        commit('setLog', json.result || [])
+        commit('setCurrentPage', 1)
+        commit('setCurTableData', { start: 0, end: state.pageSize })
+        return json
+      }
+
+      throw new Error(json.msg || '日志查询失败')
+    }).catch(err => {
+      commit(mutationTypes.SHOW_MESSAGE, {
+        dialogType: 'confirm',
+        params: {
+          title: '错误',
+          message: err.message || '日志查询失败',
+          type: 'error',
+          showCancelButton: false
+        }
+      }, { root: true })
+      throw err
+    })
   },
   getInfo2 ({commit, state, rootState, dispatch}, payload) {
     un.get('http://localhost:8083/test2', {traceId: '2'}).then(res => res.json()).then((json) => {

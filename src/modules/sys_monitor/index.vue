@@ -32,6 +32,7 @@
     </div>
     <un-table
         :data="tableData"
+        v-loading="loading"
         style="width: 100%"
         stripe
         :default-sort="{prop: 'op_time', order: 'descending'}"
@@ -71,7 +72,8 @@ export default un.component(
       return {
         opStartDate: '',
         opEndDate: '',
-        datePickerKey: 0
+        datePickerKey: 0,
+        loading: false
       }
     },
     computed: {
@@ -136,12 +138,17 @@ export default un.component(
         this.opEndDate = this.today
         this.opStartDate = this.formatDate(this.getOffsetMonthDate(new Date(),-1))
       },
-      handleSearch(){
+      async handleSearch(){
         this.setCurrentPage(1)
-        this.getInfo({
-          opStartDate: this.opStartDate,
-          opEndDate: this.opEndDate
-        })
+        this.loading = true
+        try {
+          await this.getInfo({
+            opStartDate: this.opStartDate,
+            opEndDate: this.opEndDate
+          })
+        } finally {
+          this.loading = false
+        }
       },
       resetSearch(){
         this.initDefaultDates()
