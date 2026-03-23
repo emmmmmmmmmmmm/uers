@@ -33,6 +33,8 @@
     <un-table
         :data="tableData"
         v-loading="loading"
+        :unicorn-loading-text="$t('Waiting for loading')"
+        unicorn-loading-spinner="un-icon-loading"
         style="width: 100%"
         stripe
         :default-sort="{prop: 'op_time', order: 'descending'}"
