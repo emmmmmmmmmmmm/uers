@@ -118,7 +118,7 @@ export default un.component(
         const year = date.getFullYear()
         const month = `${date.getMonth() + 1}`.padStart(2,'0')
         const day = `${date.getDate()}`.padStart(2,0)
-        return `${year} - ${month} - ${day}`
+        return `${year}-${month}-${day}`
       },
       getOffsetMonthDate(baseDate,offsetMonth){
         const date = new Date(baseDate)
@@ -141,7 +141,7 @@ export default un.component(
         })
       },
       resetSearch(){
-        this.initDefaulDates()
+        this.initDefaultDates()
         this.handleSearch()
       },
       handleSizeChange (size) {
