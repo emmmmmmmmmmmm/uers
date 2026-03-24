@@ -26,14 +26,15 @@
         </un-form-item>
         <un-form-item>
           <un-button type="primary" @click="handleSearch">查询</un-button>
-          <un-button @click="resetSearch">重置</un-button>
+          <un-button @click="resetSearch">重置</un-button> 
+          <un-button type="success" class="query-button" @click="$emit('export')">{{ '导出excel' }}</un-button>
         </un-form-item>
       </un-form>
     </div>
     <un-table
         :data="tableData"
         v-loading="loading"
-        :unicorn-loading-text="$t('Waiting for loading')"
+        :unicorn-loading-text="$t('正在加载中......')"
         unicorn-loading-spinner="un-icon-loading"
         style="width: 100%"
         stripe
@@ -42,10 +43,10 @@
         :header-row-style="{'height':'40px'}"
         :class="['limitmaxheight',{isBorder: tableData.length === 0}]"
       >
-        <un-table-column prop="op_time" label="日期" sortable width="180" align="center"></un-table-column>
-        <un-table-column prop="op_user" label="操作人ID" sortable width="180" align="center"></un-table-column>
+        <un-table-column prop="opTime" label="日期" sortable width="180" align="center"></un-table-column>
+        <un-table-column prop="opUser" label="操作人ID" sortable width="180" align="center"></un-table-column>
         <un-table-column prop="name" label="操作人姓名" sortable width="180" align="center"></un-table-column>
-        <un-table-column prop="op_detail" label="日志内容" align="center"></un-table-column>
+        <un-table-column prop="opDetail" label="日志内容" align="center"></un-table-column>
       </un-table>
       <div class="pageDiv">
         <div class="totalNum">总共{{totalNum}}个项目</div>
@@ -101,7 +102,7 @@ export default un.component(
         return{
             disabledDate:(time)=>{
             const currentDate = new Date(this.today + ' 00:00:00').getTime()
-            const startDate = this.opStartDate ? new Date(this.opStartDate + ' 00:00:00').getTime() : new Date(this.minStartDate + ' 00:00:00').getTime()
+            const startDate = this.opStartDate ? new Date(this.opStartDate + ' 00:00:00').getTime() : new Date(this.minStartDate + '00:00:00').getTime()
             return time.getTime() < startDate || time.getTime() > currentDate
              }         
           }
@@ -144,21 +145,21 @@ export default un.component(
         this.setCurrentPage(1)
         this.loading = true
         const startTime = Date.now()
-        try {
-          await this.getInfo({
+          try{
+            await this.getInfo({
             opStartDate: this.opStartDate,
             opEndDate: this.opEndDate
           })
-        } finally {
+        }finally{
           const elapsed = Date.now() - startTime
           const minDuration = 400
-
-          if (elapsed < minDuration) {
-            await new Promise(resolve => setTimeout(resolve, minDuration - elapsed))
+          
+          if(elapsed < minDuration){
+            await new Promise(resolve => setTimeout(resolve , minDuration - elapsed))
           }
-
+          
           this.loading = false
-        }
+        }       
       },
       resetSearch(){
         this.initDefaultDates()
