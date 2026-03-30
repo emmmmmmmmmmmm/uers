@@ -27,7 +27,7 @@
         <un-form-item>
           <un-button type="primary" @click="handleSearch">查询</un-button>
           <un-button @click="resetSearch">重置</un-button> 
-          <un-button type="success" class="query-button" @click="$emit('export')">{{ '导出excel' }}</un-button>
+          <un-button type="success" class="query-button" @click="exportToExcel">{{ '导出excel' }}</un-button>
         </un-form-item>
       </un-form>
     </div>
@@ -165,6 +165,53 @@ export default un.component(
         this.initDefaultDates()
         this.datePickerKey += 1
         this.handleSearch()
+      },
+      exportToExcel() {
+        const loading = this.$loading({
+          lock: true,
+          text: this.$t('exporting') || '正在导出'
+        })
+
+        const params = {
+          opStartDate: this.opStartDate,
+          opEndDate: this.opEndDate
+        }
+
+        un.getFile('/uers/export/sysLog', params).then((res) => {
+          const content = res.headers.get('Content-Disposition')
+          let filename = '日志监控.xlsx'
+
+          if (content) {
+            const utf8Match = content.match(/filename\*=UTF-8''([^;]+)/i)
+            if (utf8Match) {
+              filename = decodeURIComponent(utf8Match[1])
+            } else {
+              const fileMatch = content.match(/filename="?([^";]+)"?/i)
+              if (fileMatch) {
+                filename = fileMatch[1]
+              }
+            }
+          }
+
+          return res.blob().then((blob) => {
+            const blobData = blob instanceof Blob ? blob : new Blob([blob], { type: 'application/octet-stream' })
+            const blobUrl = window.URL.createObjectURL(blobData)
+            const link = document.createElement('a')
+            link.href = blobUrl
+            link.download = filename
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            URL.revokeObjectURL(blobUrl)
+
+            this.$message.success(this.$t('exportSuccess') || '导出成功')
+          })
+        }).catch((e) => {
+          console.log('导出失败', e)
+          this.$message.error(this.$t('exportFailed') || '导出失败')
+        }).finally(() => {
+          loading.close()
+        })
       },
       handleSizeChange (size) {
         this.setPageSize(size)
