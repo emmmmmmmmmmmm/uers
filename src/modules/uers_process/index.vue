@@ -735,7 +735,7 @@ export default un.component({
 
         if (response.code === '0') {
           this.$message.success(this.$t('rejectSuccess'));
-          this.fetchData('flowToMe'); // 刷新表格数据
+          this.fetchData('todeal'); // 刷新表格数据
         } else {
           this.$message.error(response.msg || this.$t('rejectFailed'));
         }
@@ -752,7 +752,6 @@ export default un.component({
         lock: true,
         text: this.$t('exporting')||('正在导出')
     })
-      console.log('handleViewTask.taskId=', row.taskId)
 
           un.getFile('/task/viewTask',{taskId:row.taskId}).then((res) => {
             const content =  res.headers.get('Content-Disposition');
@@ -785,67 +784,65 @@ export default un.component({
           }).catch((e) => {
             console.log("下载失败",e);
             this.$message.warning('下载失败，请联系管理员！');
-        }).finally(() => {
-            loading.close();
+        }).finally(()=>{
+          loading.close();
         })    
     },
-
 
     //导出excel
     exportToExcel(tab){
       const loading = this.$loading({
-          lock: true,
-          text: this.$t('exporting')||(' 正在导出')
-        })
+      lock: true,
+      text: this.$t('exporting')||('正在导出')
+    })
 
-      const tabState = this[tab]
-      const params = {
-        type: tab,
-        taskId: tabState.queryForm.taskId,
-        tableName: tabState.queryForm.tableName,
-        belongLine: tabState.queryForm.belongLine,
-        taskStatus: tabState.queryForm.taskStatus,
-        ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
-          startDate: tabState.queryForm.date[0],
-          endDate: tabState.queryForm.date[1]
-        })
-      }
-
-      un.getFile('/task/export', params).then((res) => {
-        const content = res.headers.get('Content-Disposition');
-        let filename = '任务列表.xlsx';
-        if(content){
-          const utf8Match  = content.match(/filename\*=UTF-8''([^;]+)/i);
-          if(utf8Match){
-            filename = decodeURIComponent(utf8Match[1]);
-          }else{
-            const fileMatch  = content.match(/filename="?([^";]+)"?/i);
-            if(fileMatch){
-              filename = fileMatch[1];
-            }
+    const tabState = this[tab]
+          const params = {
+            type:tab,
+            taskId: tabState.queryForm.taskId,
+            tableName: tabState.queryForm.tableName,
+            belongLine: tabState.queryForm.belongLine,
+            taskStatus: tabState.queryForm.taskStatus,
+            ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
+              startDate: tabState.queryForm.date[0],
+              endDate: tabState.queryForm.date[1]
+            })
           }
-        }
-        return res.blob().then((blob)=>{
-          const blob1 =blob instanceof Blob ? blob: new Blob([blob],{type:'application/octet-stream'});
-          const blobUrl = window.URL.createObjectURL(blob1);
-          let link =document.createElement('a');
-          link.href = blobUrl;
-          link.download = filename;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          un.getFile('/task/export',params).then((res) => {
+            const content =  res.headers.get('Content-Disposition');
+            console.log('handleViewTask.content=',JSON.stringify(content))
+            let filename = '任务列表.xlsx';
+            if(content){
+              const utf8Match  = content.match(/filename\*=UTF-8''([^;]+)/i);
+              if(utf8Match){
+                filename = decodeURIComponent(utf8Match[1]);
+              }else{
+                const fileMatch  = content.match(/filename="?([^";]+)"?/i);
+                if(fileMatch){
+                  filename = fileMatch[1];
+                }
+              }
+            }
+            res.blob().then((blob)=>{
+              const blob1 =blob instanceof Blob ? blob: new Blob([blob],{type:'application/octet-stream'});
+              const blobUrl = window.URL.createObjectURL(blob1);
+              let link =document.createElement('a');
+              link.href = blobUrl;
+              link.download = filename;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
 
-          URL.revokeObjectURL(blobUrl);
-          this.$message.success(this.$t('exportSuccess') || '导出成功')
-        })
-      }).catch((e) => {
-        console.log("导出失败",e);
-        this.$message.error(this.$t('exportFailed') || '导出失败');
-      }).finally(() => {
-        loading.close()
-      })
+              URL.revokeObjectURL(blobUrl);
+            })
+
+          }).catch((e) => {
+            console.log("下载失败",e);
+            this.$message.warning('下载失败，请联系管理员！');
+        }).finally(()=>{
+          loading.close();
+        })                    
     }
-
   }
 }, {
   mutations: {
