@@ -25,8 +25,18 @@
           :header-row-style="{ height: '40px' }"
           style="width: 100%"
         >
-          <!-- <un-table-column type="index" :label="$t('NO.')" width="80" align="center"></un-table-column> -->
-          <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
+
+          <un-table-column prop="taskId" :label="$t('taskId')" width="230" align="center">
+            <template #default="{ row }">
+              <un-tooltip :content="$t('viewAttachment')" placement = "top">
+                <span>
+                  <un-button type="text" @click="handleViewTask(row)">{{ row.taskId }}</un-button>
+                </span>
+              </un-tooltip>
+              
+            </template>
+          </un-table-column>
+
           <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
           <un-table-column prop="belongLine" :label="$t('belongLine')" width="100" align="center"></un-table-column>
           <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center">
@@ -50,12 +60,6 @@
             </template>    
           </un-table-column>
 
-          <un-table-column :label="$t('operation')" width="140" fixed="right" align="center">
-            <template #default="{ row }">
-              <un-button type="text" @click="handleViewTask(row)">{{ $t('view') }}</un-button>
-            </template>
-          </un-table-column>
-          
         </un-table>
         <pagination-footer 
           :total="processed.totalNum"
@@ -81,7 +85,7 @@
         <un-table 
           :data="todeal.tableData" 
           v-loading="todeal.loading"
-          :max-height="400"
+          :max-height="350"
           :unicorn-loading-text="$t('Waiting for loading')"
           unicorn-loading-spinner="un-icon-loading"
           @selection-change="handleSelectionChange"
@@ -90,7 +94,17 @@
           :header-row-style="{ height: '40px' }"
           style="width: 100%"
         >
-          <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
+
+          <un-table-column prop="taskId" :label="$t('taskId')" width="230" align="center">
+            <template #default="{ row }">
+              <un-tooltip :content="$t('viewAttachment')" placement = "top">
+                <span>
+                  <un-button type="text" @click="handleViewTask(row)">{{ row.taskId }}</un-button>
+                </span>
+              </un-tooltip>             
+            </template>
+          </un-table-column>
+
           <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
           <un-table-column prop="belongLine" :label="$t('belongLine')" width="100" align="center"></un-table-column>
 
@@ -172,7 +186,17 @@
           :header-row-style="{ height: '40px' }"
           style="width: 100%"
         >
-          <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
+
+          <un-table-column prop="taskId" :label="$t('taskId')" width="230" align="center">
+            <template #default="{ row }">
+              <un-tooltip :content="$t('viewAttachment')" placement = "top">
+                <span>
+                  <un-button type="text" @click="handleViewTask(row)">{{ row.taskId }}</un-button>
+                </span>
+              </un-tooltip>             
+            </template>
+          </un-table-column>
+
           <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
           <un-table-column prop="belongLine" :label="$t('belongLine')" width="100" align="center"></un-table-column>
           <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center">
@@ -237,6 +261,7 @@
         <un-table 
           :data="flowToMe.tableData" 
           v-loading="flowToMe.loading"
+          :max-height="350"
           :unicorn-loading-text="$t('Waiting for loading')"
           unicorn-loading-spinner="un-icon-loading"
           stripe
@@ -245,7 +270,16 @@
           style="width: 100%"
         >
 
-        <un-table-column prop="taskId" :label="$t('taskId')" width="150" align="center"></un-table-column>
+          <un-table-column prop="taskId" :label="$t('taskId')" width="230" align="center">
+            <template #default="{ row }">
+              <un-tooltip :content="$t('viewAttachment')" placement = "top">
+                <span>
+                  <un-button type="text" @click="handleViewTask(row)">{{ row.taskId }}</un-button>
+                </span>
+              </un-tooltip>             
+            </template>
+          </un-table-column>
+
           <un-table-column prop="tableName" :label="$t('tableName')" width="200" align="center"></un-table-column>
           <un-table-column prop="belongLine" :label="$t('belongLine')" width="100" align="center"></un-table-column>
           <un-table-column prop="taskUser" :label="$t('taskUser')" width="200" align="center">

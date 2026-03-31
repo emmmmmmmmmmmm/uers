@@ -85,6 +85,7 @@ module.exports = {
 			"completed":"当前任务已完成，不可删除",
 			"notAllowed":"当前任务状态不允许删除"
 		},
+		"viewAttachment":"查看附件",
 		"noAttachment":"没有可下载的附件",
 		"viewTaskFailed":"查看任务失败"
 	},	
@@ -174,6 +175,7 @@ module.exports = {
 			"completed":"Current task is in Final Approval stage,cannot be deleted",
 			"notAllowed":"Current task status does not allow deletion"
 		},
+		"viewAttachment":"View attachment",
 		"noAttachment":"No attachment available for download",
 		"viewTaskFailed":"Failed to view task"
 	}
