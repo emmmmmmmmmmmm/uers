@@ -26,7 +26,7 @@
           style="width: 100%"
         >
 
-          <un-table-column prop="taskId" :label="$t('taskId')" width="230" align="center">
+          <un-table-column prop="taskId" :label="$t('taskId')" width="240" align="center">
             <template #default="{ row }">
               <un-tooltip :content="$t('viewAttachment')" placement = "top">
                 <span>
@@ -95,7 +95,7 @@
           style="width: 100%"
         >
 
-          <un-table-column prop="taskId" :label="$t('taskId')" width="230" align="center">
+          <un-table-column prop="taskId" :label="$t('taskId')" width="240" align="center">
             <template #default="{ row }">
               <un-tooltip :content="$t('viewAttachment')" placement = "top">
                 <span>
@@ -133,7 +133,7 @@
           <un-table-column :label="$t('operation')" width="140" fixed="right" align="center">
             <template #default="{ row }">
               <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
-                <un-button type="text" @click="approveFlow(row)">{{ $t('approval') }}</un-button>
+                <un-button type="text" :disabled="approvingTaskId === row.taskId" :loading="approvingTaskId ===row.taskId" @click="approveFlow(row)">{{ $t('approval') }}</un-button>
                 <un-tooltip
                   :content = "getRejecttooltip(row)"
                   :disabled = "row.currentNode !== '1' "
@@ -142,7 +142,8 @@
                 <span>
                   <un-button
                     type = "text"
-                    :disabled = "row.currentNode === '1' "
+                    :disabled = "row.currentNode === '1' || rejetingTaskId === row.taskId"
+                    :loading = "rejectingTaskId === row.taskId"
                     @click="rejectFlow(row)"
                   >
                     {{ $t('reject') }}
@@ -187,7 +188,7 @@
           style="width: 100%"
         >
 
-          <un-table-column prop="taskId" :label="$t('taskId')" width="230" align="center">
+          <un-table-column prop="taskId" :label="$t('taskId')" width="240" align="center">
             <template #default="{ row }">
               <un-tooltip :content="$t('viewAttachment')" placement = "top">
                 <span>
@@ -270,7 +271,7 @@
           style="width: 100%"
         >
 
-          <un-table-column prop="taskId" :label="$t('taskId')" width="230" align="center">
+          <un-table-column prop="taskId" :label="$t('taskId')" width="240" align="center">
             <template #default="{ row }">
               <un-tooltip :content="$t('viewAttachment')" placement = "top">
                 <span>
@@ -350,19 +351,19 @@ const PaginationFooter = {
 }
 
 const QueryForm = {
-  props: {
-    form: Object,
-    taskOptions: {
-      type: Array,
-      default: () => []
+  props: { 
+    form: Object ,
+    taskOptions :{
+      type:Array,
+      default:()=>[]
     },
-    tableOptions: {
-      type: Array,
-      default: () => []
+    tableOptions :{
+      type:Array,
+      default:()=>[]
     },
-    lineOptions: {
-      type: Array,
-      default: () => []
+    lineOptions :{
+      type:Array,
+      default:()=>[]
     }
   },
 
@@ -464,29 +465,31 @@ const QueryForm = {
 
 export default un.component({
   components: { PaginationFooter, QueryForm },
-
-  data () {
+  
+  data() {
     return {
       activeTab: 'processed',
-      selectItem: []
+      selectItem: [],
+      approvingTaskId: null,
+      rejectingTaskId: null
     }
   },
-
-  created () {
+  
+  created() {
     this.initTabData('processed')
   },
-
+  
   computed: {
-    todeal () { return this.$store.state.agencyTask.todeal },
-    mySubmission () { return this.$store.state.agencyTask.mySubmission },
-    flowToMe () { return this.$store.state.agencyTask.flowToMe },
-    processed () { return this.$store.state.agencyTask.processed },
-    selectedCount () { return this.selectItem.length },
-    buttonDisabled () { return this.activeTab !== 'todeal' || this.selectedCount === 0 }
+    todeal() { return this.$store.state.agencyTask.todeal },
+    mySubmission() { return this.$store.state.agencyTask.mySubmission },
+    flowToMe() { return this.$store.state.agencyTask.flowToMe },
+    processed() { return this.$store.state.agencyTask.processed },
+    selectedCount() { return this.selectItem.length },
+    buttonDisabled() { return this.activeTab !== 'todeal' || this.selectedCount === 0 }
   },
-
+  
   methods: {
-    initTabData (tab) {
+    initTabData(tab) {
       const actions = {
         todeal: 'getProcessTodeal',
         mySubmission: 'getMySubmissions',
@@ -494,47 +497,49 @@ export default un.component({
         processed: 'getProcessedTasks'
       }
       // 添加清除选中项逻辑
-      if (tab === 'processed') this.selectItem = []
+      if (tab === 'processed') this.selectItem = [];
       // 直接调用映射后的action方法
       this[actions[tab]]({ init: true })
     },
-
-    handleTabChange ({ name }) {
+    
+    handleTabChange({ name }) {
       this.activeTab = name
       this.initTabData(name)
     },
-
-    fetchData (tab) {
-      this.initTabData(tab)
+    
+    fetchData(tab) {
+        this.initTabData(tab);
       //this.$store.dispatch(`get${tab.charAt(0).toUpperCase() + tab.slice(1)}`, { init: true })
     },
-
-    resetQueryForm (tab) {
+    
+    resetQueryForm(tab) {
       this.$store.dispatch('resetQueryForm', { tab })
       this.fetchData(tab)
     },
-
-    handleSizeChange (tab, size) {
+    
+    handleSizeChange(tab, size) {
       // this.$store.dispatch('handleSizeChange', { tab, size })
       // this.fetchData(tab)
 
       this.$store.commit(`agencyTask/${tab}PageSize`, size)
       this.$store.commit(`agencyTask/${tab}CurrentPage`, 1)
       this.$store.commit(`agencyTask/${tab}TableData`)
-    },
 
-    handleCurrentChange (tab, page) {
+    },
+    
+    handleCurrentChange(tab, page) {
       // this.$store.dispatch('handleCurrentChange', { tab, page })
       // this.fetchData(tab)
 
       this.$store.commit(`agencyTask/${tab}CurrentPage`, page)
       this.$store.commit(`agencyTask/${tab}TableData`)
-    },
 
-    handleSelectionChange (val) {
+    },
+    
+    handleSelectionChange(val) {
       this.selectItem = val
     },
-
+    
     /**
     navigateTo(path, row) {
       //this.$store.commit('setCurrentBranch', row)
@@ -547,66 +552,67 @@ export default un.component({
     */
 
 
-    getDeleteWarningMessage (currentNode) {
+    getDeleteWarningMessage(currentNode){
 
-      switch (currentNode) {
-        case '2':
-          return this.$t('deleteDisabled.review')
+        switch(currentNode){
+          case '2':
+            return this.$t('deleteDisabled.review');
           case '3':
-          return this.$t('deleteDisabled.initialApproval')
+            return this.$t('deleteDisabled.initialApproval');
           case '4':
-          return this.$t('deleteDisabled.finalApproval')
+            return this.$t('deleteDisabled.finalApproval');
           case '5':
-          return this.$t('deleteDisabled.completed')
+            return this.$t('deleteDisabled.completed');
           default:
-          return this.$t('deleteDisabled.notAllowed')
+          return this.$t('deleteDisabled.notAllowed');
         }
     },
 
-    getDeleteTooltip (row) {
-      if (row.currentNode === '1') {
-        return ''
+    getDeleteTooltip(row){
+      if(row.currentNode==='1'){
+        return '';
       }
-      return this.getDeleteWarningMessage(row.currentNode)
+      return this.getDeleteWarningMessage(row.currentNode);
     },
 
-    getRejecttooltip (row) {
-      if (row.currentNode === '1') {
-        return this.$t('rejectDisabled.handling')
+    getRejecttooltip(row){
+      if(row.currentNode==='1'){
+        return this.$t('rejectDisabled.handling');
       }
-      return '';
+      return '';;
     },
 
-    async approval (row) {
+    async approval(row) {
       try {
         // 确认对话框
         await this.$confirm(this.$t('confirmDelete'), this.$t('warning'), {
           confirmButtonText: this.$t('confirm'),
           cancelButtonText: this.$t('cancel'),
           type: 'warning'
-        })
+        });
         
         // 构建删除参数
         const approveParams = {
           taskId: row.taskId,
           belongLine: row.belongLine
-        }
+        };
         
         // 调用审批API
 
       } catch (e) {
         // 用户取消删除时不显示错误
         if (e !== 'cancel' && e !== 'close') {
-          this.$message.error(e.message || this.$t('approveFailed'))
+          this.$message.error(e.message || this.$t('approveFailed'));
         }
       }
     },
 
-    async deleteSubmission (row) {
+    async deleteSubmission(row) {
       try {
-        if (row.currentNode !== '1') {
-          this.message = warning(this.getDeleteWarningMessage(row.currentNode));
-          return
+
+        if(row.currentNode!=='1'){
+          this.message=warning(this.getDeleteWarningMessage(row.currentNode));
+          return;
         }
 
         // 确认对话框
@@ -614,285 +620,283 @@ export default un.component({
           confirmButtonText: this.$t('confirm'),
           cancelButtonText: this.$t('cancel'),
           type: 'warning'
-        })
+        });
         
         // 构建删除参数
         const deleteParams = {
           taskId: row.taskId,
           belongLine: row.belongLine,
           startTime: row.startTime
-        }
+        };
         
         // 调用删除API
         //const response = await this.$store.dispatch('agencyTask/deleteTask', deleteParams);
-        const response = await this.deleteTask(deleteParams)
+        const response = await this.deleteTask(deleteParams);
 
         if (response.code === '0') {
-          this.$message.success(this.$t('deleteSuccess'))
-          this.fetchData('mySubmission') // 刷新表格数据
+          this.$message.success(this.$t('deleteSuccess'));
+          this.fetchData('mySubmission'); // 刷新表格数据
         } else {
-          this.$message.error(response.msg || this.$t('deleteFailed'))
+          this.$message.error(response.msg || this.$t('deleteFailed'));
         }
       } catch (e) {
         // 用户取消删除时不显示错误
         if (e !== 'cancel' && e !== 'close') {
-          this.$message.error(e.message || this.$t('deleteFailed'))
+          this.$message.error(e.message || this.$t('deleteFailed'));
         }
       }
     },
 
 
     // 删除任务
-    async deleteTaskInfo (row) {
+    async deleteTaskInfo(row) {
       try {
         // 确认对话框
         await this.$confirm(this.$t('confirmDelete'), this.$t('warning'), {
           confirmButtonText: this.$t('confirm'),
           cancelButtonText: this.$t('cancel'),
           type: 'warning'
-        })
+        });
         
         // 构建删除参数
         const deleteParams = {
           taskId: row.taskId,
           belongLine: row.belongLine,
           startTime: row.startTime
-        }
+        };
         
         // 调用删除API
         //const response = await this.$store.dispatch('agencyTask/deleteTask', deleteParams);
-        const response = await this.deleteTask(deleteParams)
+        const response = await this.deleteTask(deleteParams);
 
         if (response.code === '0') {
-          this.$message.success(this.$t('deleteSuccess'))
-          this.fetchData('processed') // 刷新表格数据
+          this.$message.success(this.$t('deleteSuccess'));
+          this.fetchData('processed'); // 刷新表格数据
         } else {
-          this.$message.error(response.msg || this.$t('deleteFailed'))
+          this.$message.error(response.msg || this.$t('deleteFailed'));
         }
       } catch (e) {
         // 用户取消删除时不显示错误
         if (e !== 'cancel' && e !== 'close') {
-          this.$message.error(e.message || this.$t('deleteFailed'))
+          this.$message.error(e.message || this.$t('deleteFailed'));
         }
       }
     },
 
     // 审核通过
-    async approveFlow (row) {
+    async approveFlow(row) {
+      if(this.approvingTaskId) return
+      this.approvingTaskId = row.taskId
       try {
-        // 使用prompt获取审批意见
-        const { value: comment } = await this.$prompt(this.$t('approveCommentPrompt'), this.$t('confirmApprove'), {
+        //使用prompt获取审批意见
+        const{ value:comment } = await this.$prompt(this.$t('approveCommentPrompt'), this.$t('confirmApprove'), {
           confirmButtonText: this.$t('confirm'),
           cancelButtonText: this.$t('cancel'),
           inputType: 'textarea',
-          inputPlaceholder: this.$t('approveCommentPlaceholder'),
-          inputValidator: (value) => {
-            if (!value || value.trim() === '') {
+          inputPlaceholder : this.$t('approveCommentPlaceholder'),
+          inputValidator:(value) => {
+            if(!value || value.trim() === ''){
               return this.$t('approveCommentRequired')
             }
-            if (value.length > 1000) {
+            if(value.length > 1000){
               return this.$t('approveCommentTooLong')
             }
-            return true
+            return true;
           },
-          inputErrorMessage: this.$t('approveCommentRequired')
-        })
+          inputErrorMessage:this.$t('approveCommentRequired')
+        });
 
          // 构建审核参数
         const approveFlowParams = {
           taskId: row.taskId,
           belongLine: row.belongLine,
           startTime: row.startTime,
-          currentNode: row.currentNode,
-          approveBranch: row.approveBranch,
-          applyBranch: row.applyBranch,
-          comment: comment.trim()
-        } 
+          currentNode:row.currentNode,
+          approveBranch:row.approveBranch,
+          applyBranch:row.applyBranch,
+          comment:comment.trim()
+        }; 
 
         // 调用审批API
-        const response = await this.approveFlowTask(approveFlowParams)
+        const response = await this.approveFlowTask(approveFlowParams);
 
         if (response.code === '0') {
-          this.$message.success(this.$t('approveSuccess'))
-          this.fetchData('todeal') // 刷新表格数据
+          this.$message.success(this.$t('approveSuccess'));
+          this.fetchData('todeal'); // 刷新表格数据
         } else {
-          this.$message.error(response.msg || this.$t('approveFailed'))
+          this.$message.error(response.msg || this.$t('approveFailed'));
         }
       } catch (e) {
         // 用户取消时不显示错误
         if (e !== 'cancel' && e !== 'close') {
-          this.$message.error(e.message || this.$t('approveFailed'))
+          this.$message.error(e.message || this.$t('approveFailed'));
         }
+      }finally{
+        this.approvingTaskId = null
       }
     },
-
-    async rejectFlow (row) {
+    
+    async rejectFlow(row) {
+      if(this.approvingTaskId) return
+      this.approvingTaskId = row.taskId
       try {
-        if (row.currentNode === '1') {
-          this.message.warning(this.$t('rejectDisabled.handling'));
-              return
+            if(row.currentNode === '1'){
+              this.message.warning(this.$t('rejectDisabled.handling'));
+              return;
             }
 
-        const {value: comment} = await this.$prompt(this.$t('rejectCommentPrompt'), this.$t('confirmReject'), {
+        const {value: comment} = await this.$prompt(this.$t('rejectCommentPrompt'),this.$t('confirmReject'),{
           confirmButtonText: this.$t('confirm'),
           cancelButtonText: this.$t('cancel'),
           inputType: 'textarea',
-          inputPlaceholder: this.$t('rejectCommentPromptPlaceHolder'),
+          inputPlaceholder : this.$t('rejectCommentPromptPlaceHolder'),
           inputValidator: (value) => {
-            if (!value || value.trim() === '') {
+            if(!value || value.trim() === ''){
               return this.$t('rejectCommentRequired')
             }
-            if (value.length > 1000) {
+            if(value.length > 1000){
               return this.$t('rejectCommentTooLong')
             }
-            return true
+            return true;
           },
-          inputErrorMessage: this.$t('rejectCommentRequired')
-        })
+          inputErrorMessage:this.$t('rejectCommentRequired')
+        });
 
         // 构建驳回参数
         const rejectFlowParams = {
           taskId: row.taskId,
           belongLine: row.belongLine,
           startTime: row.startTime,
-          currentNode: row.currentNode,
-          approveBranch: row.approveBranch,
-          applyBranch: row.applyBranch,
-          comment: comment.trim()
-        } 
+          currentNode:row.currentNode,
+          approveBranch:row.approveBranch,
+          applyBranch:row.applyBranch,
+          comment:comment.trim()
+        }; 
 
         // 调用驳回API
-        const response = await this.rejectFlowTask(rejectFlowParams)
+        const response = await this.rejectFlowTask(rejectFlowParams);
 
         if (response.code === '0') {
-          this.$message.success(this.$t('rejectSuccess'))
-          this.fetchData('todeal') // 刷新表格数据
+          this.$message.success(this.$t('rejectSuccess'));
+          this.fetchData('todeal'); // 刷新表格数据
         } else {
-          this.$message.error(response.msg || this.$t('rejectFailed'))
+          this.$message.error(response.msg || this.$t('rejectFailed'));
         }
       } catch (e) {
         // 用户取消时不显示错误
         if (e !== 'cancel' && e !== 'close') {
-          this.$message.error(e.message || this.$t('rejectFailed'))
+          this.$message.error(e.message || this.$t('rejectFailed'));
         }
+      }finally{
+        this.rejectingTaskId = null
       }
     },
 
-    handleViewTask (row) {
+    handleViewTask(row) {
       const loading = this.$loading({
         lock: true,
-        text: this.$t('exporting') || ('正在导出')
-      })
+        text: this.$t('exporting')||('正在导出')
+    })
 
-      un.getFile('/task/viewTask', {taskId: row.taskId}).then(async (res) => {
-        const content = res.headers.get('Content-Disposition')
-            console.log('handleViewTask.content=', JSON.stringify(content))
-        if (!content) {
-          const fallbackMessage = this.$t('noAttachment') || this.$t('viewTaskFailed') || '下载失败，请联系管理员！'
-              let errorMessage = fallbackMessage;
-
-          try {
-            const errorText = await res.text();
-            if (errorText) {
-              try {
-                const errorJson = JSON.parse(errorText)
-                    errorMessage = errorJson.msg || errorJson.message || fallbackMessage;
-              } catch (parseError) {
-                errorMessage = /^\s*</.test(errorText) ? fallbackMessage : errorText
-                  }
+          un.getFile('/task/viewTask',{taskId:row.taskId}).then((res) => {
+            const content =  res.headers.get('Content-Disposition');
+            if(!content){
+              const fallBackMessage = this.$t('noAttachment') || this.$t('viewTaskFailed') || '下载失败，请联系管理员'
+              let errorMessage = fallBackMessage;
+              throw new Error(errorMessage);
             }
-          } catch (readError) {
-            console.log('读取下载错误响应失败', readError)
+
+            let filename = '补录详情.xlsx';
+            if(content){
+              const utf8Match  = content.match(/filename\*=UTF-8''([^;]+)/i);
+              if(utf8Match){
+                filename = decodeURIComponent(utf8Match[1]);
+              }else{
+                const fileMatch  = content.match(/filename="?([^";]+)"?/i);
+                if(fileMatch){
+                  filename = fileMatch[1];
+                }
               }
-
-          throw new Error(errorMessage)
             }
-        let filename = '补录详情.xlsx';
-        if (content) {
-          const utf8Match = content.match(/filename\*=UTF-8''([^;]+)/i);
-          if (utf8Match) {
-            filename = decodeURIComponent(utf8Match[1]);
-          } else {
-            const fileMatch = content.match(/filename="?([^";]+)"?/i);
-            if (fileMatch) {
-              filename = fileMatch[1]
-                }
-          }
-        }
-        res.blob().then((blob) => {
-          const blob1 = blob instanceof Blob ? blob : new Blob([blob], {type: 'application/octet-stream'})
-              const blobUrl = window.URL.createObjectURL(blob1)
-              let link = document.createElement('a')
-              link.href = blobUrl
-              link.download = filename
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link)
+            res.blob().then((blob)=>{
+              const blob1 =blob instanceof Blob ? blob: new Blob([blob],{type:'application/octet-stream'});
+              const blobUrl = window.URL.createObjectURL(blob1);
+              let link =document.createElement('a');
+              link.href = blobUrl;
+              link.download = filename;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
 
-              URL.revokeObjectURL(blobUrl)
+              URL.revokeObjectURL(blobUrl);
             })
 
-      }).catch((e) => {
-        console.log('下载失败', e)
-            this.$message.warning(e.message || this.$t('viewTaskFailed') || '下载失败，请联系管理员！')
-        }).finally(() => {
-        loading.close()
-        })
+          }).catch((e) => {
+            console.log("下载失败",e);
+            this.$message.warning('下载失败，请联系管理员！');
+        }).finally(()=>{
+          loading.close();
+        })    
     },
 
-    // 导出excel
-    exportToExcel (tab) {
+    //导出excel
+    exportToExcel(tab){
       const loading = this.$loading({
-        lock: true,
-        text: this.$t('exporting') || ('正在导出')
-      })
+      lock: true,
+      text: this.$t('exporting')||('正在导出')
+    })
 
-      const tabState = this[tab]
-      const params = {
-        type: tab,
-        taskId: tabState.queryForm.taskId,
-        tableName: tabState.queryForm.tableName,
-        belongLine: tabState.queryForm.belongLine,
-        taskStatus: tabState.queryForm.taskStatus,
-        ...(tabState.queryForm.date && tabState.queryForm.date.length === 2 && {
-          startDate: tabState.queryForm.date[0],
-          endDate: tabState.queryForm.date[1]
-        })
-      }
-      un.getFile('/task/export', params).then((res) => {
-        const content = res.headers.get('Content-Disposition')
-            console.log('handleViewTask.content=', JSON.stringify(content))
-        let filename = '任务列表.xlsx';
-        if (content) {
-          const utf8Match = content.match(/filename\*=UTF-8''([^;]+)/i);
-          if (utf8Match) {
-            filename = decodeURIComponent(utf8Match[1]);
-          } else {
-            const fileMatch = content.match(/filename="?([^";]+)"?/i);
-            if (fileMatch) {
-              filename = fileMatch[1]
-                }
+    const tabState = this[tab]
+          const params = {
+            type:tab,
+            taskId: tabState.queryForm.taskId,
+            tableName: tabState.queryForm.tableName,
+            belongLine: tabState.queryForm.belongLine,
+            taskStatus: tabState.queryForm.taskStatus,
+            ...(tabState.queryForm.date && tabState.queryForm.date.length ===2 &&{
+              startDate: tabState.queryForm.date[0],
+              endDate: tabState.queryForm.date[1]
+            })
           }
-        }
-        res.blob().then((blob) => {
-          const blob1 = blob instanceof Blob ? blob : new Blob([blob], {type: 'application/octet-stream'})
-              const blobUrl = window.URL.createObjectURL(blob1)
-              let link = document.createElement('a')
-              link.href = blobUrl
-              link.download = filename
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link)
+          un.getFile('/task/export',params).then((res) => {
+            const content =  res.headers.get('Content-Disposition');
+            if(!content){
+              const fallBackMessage = this.$t('noAttachment') || this.$t('viewTaskFailed') || '下载失败，请联系管理员'
+              let errorMessage = fallBackMessage;
+              throw new Error(errorMessage);
+            }
 
-              URL.revokeObjectURL(blobUrl)
+            let filename = '任务列表.xlsx';
+            if(content){
+              const utf8Match  = content.match(/filename\*=UTF-8''([^;]+)/i);
+              if(utf8Match){
+                filename = decodeURIComponent(utf8Match[1]);
+              }else{
+                const fileMatch  = content.match(/filename="?([^";]+)"?/i);
+                if(fileMatch){
+                  filename = fileMatch[1];
+                }
+              }
+            }
+            res.blob().then((blob)=>{
+              const blob1 =blob instanceof Blob ? blob: new Blob([blob],{type:'application/octet-stream'});
+              const blobUrl = window.URL.createObjectURL(blob1);
+              let link =document.createElement('a');
+              link.href = blobUrl;
+              link.download = filename;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+
+              URL.revokeObjectURL(blobUrl);
             })
 
-      }).catch((e) => {
-        console.log('下载失败', e)
-            this.$message.warning('下载失败，请联系管理员！')
-        }).finally(() => {
-        loading.close()
-        })
+          }).catch((e) => {
+            console.log("下载失败",e);
+            this.$message.warning('下载失败，请联系管理员！');
+        }).finally(()=>{
+          loading.close();
+        })                    
     }
   }
 }, {
@@ -900,9 +904,9 @@ export default un.component({
     'self': ['setOperCardShow', 'setCurrentBranch'],
     'global': ['gotoPage', 'showMessage']
   },
-  actions: {
-    'self': [ 'getProcessTodeal', 'getMySubmissions', 'getFlowsToMe', 'getProcessedTasks', 'deleteTask', 'approveFlowTask', 'rejectFlowTask', 'exportExcelData', 'viewTask']
-  }
+    actions: {
+      'self': [ 'getProcessTodeal','getMySubmissions','getFlowsToMe','getProcessedTasks','deleteTask','approveFlowTask','rejectFlowTask','exportExcelData','viewTask']
+    }
 }, {
   mName: 'agencyTask',
   store,
