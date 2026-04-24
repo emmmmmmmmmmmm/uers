@@ -133,7 +133,7 @@
           <un-table-column :label="$t('operation')" width="140" fixed="right" align="center">
             <template #default="{ row }">
               <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
-                <un-button type="text" :disabled="approvingTaskId === row.taskId" :loading="approvingTaskId ===row.taskId" @click="approveFlow(row)">{{ $t('approval') }}</un-button>
+                <un-button type="text" :disabled="processingTaskId === row.taskId" :loading="processingTaskId === row.taskId" @click="approveFlow(row)">{{ $t('approval') }}</un-button>
                 <un-tooltip
                   :content = "getRejecttooltip(row)"
                   :disabled = "row.currentNode !== '1' "
@@ -142,8 +142,8 @@
                 <span>
                   <un-button
                     type = "text"
-                    :disabled = "row.currentNode === '1' || rejetingTaskId === row.taskId"
-                    :loading = "rejectingTaskId === row.taskId"
+                    :disabled = "row.currentNode === '1' || processingTaskId === row.taskId"
+                    :loading = "processingTaskId === row.taskId"
                     @click="rejectFlow(row)"
                   >
                     {{ $t('reject') }}
@@ -470,8 +470,7 @@ export default un.component({
     return {
       activeTab: 'processed',
       selectItem: [],
-      approvingTaskId: null,
-      rejectingTaskId: null
+      processingTaskId: null
     }
   },
   
@@ -685,8 +684,8 @@ export default un.component({
 
     // 审核通过
     async approveFlow(row) {
-      if(this.approvingTaskId) return
-      this.approvingTaskId = row.taskId
+      if(this.processingTaskId) return
+      this.processingTaskId = row.taskId
       try {
         //使用prompt获取审批意见
         const{ value:comment } = await this.$prompt(this.$t('approveCommentPrompt'), this.$t('confirmApprove'), {
@@ -732,19 +731,18 @@ export default un.component({
           this.$message.error(e.message || this.$t('approveFailed'));
         }
       }finally{
-        this.approvingTaskId = null
+        this.processingTaskId = null
       }
     },
     
     async rejectFlow(row) {
-      if(this.approvingTaskId) return
-      this.approvingTaskId = row.taskId
+      if(this.processingTaskId) return
+      if(row.currentNode === '1'){
+        this.$message.warning(this.$t('rejectDisabled.handling'));
+        return;
+      }
+      this.processingTaskId = row.taskId
       try {
-            if(row.currentNode === '1'){
-              this.message.warning(this.$t('rejectDisabled.handling'));
-              return;
-            }
-
         const {value: comment} = await this.$prompt(this.$t('rejectCommentPrompt'),this.$t('confirmReject'),{
           confirmButtonText: this.$t('confirm'),
           cancelButtonText: this.$t('cancel'),
@@ -788,7 +786,7 @@ export default un.component({
           this.$message.error(e.message || this.$t('rejectFailed'));
         }
       }finally{
-        this.rejectingTaskId = null
+        this.processingTaskId = null
       }
     },
 
