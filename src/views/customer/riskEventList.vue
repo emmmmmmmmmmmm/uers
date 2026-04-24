@@ -53,7 +53,7 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="7">
+        <el-col :span="5">
           <el-form-item label="审核状态:">
             <el-select
               v-model="queryForm.confirmStatus"
@@ -69,11 +69,27 @@
           </el-form-item>
         </el-col>
         <!-- 客户信息查询组件 -->
-        <el-col :span="12">
+        <el-col :span="11">
           <custForm
             :custCod.sync="queryForm.custCod"
             :custNam.sync="queryForm.custNam"
           ></custForm>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="是否发起客户风险等级评估：">
+            <el-select
+              v-model="queryForm.iSCstInv"
+              clearable
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in isCstInvOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
         </el-col>
       </el-row>
     </el-form>
@@ -328,6 +344,10 @@ export default {
       limit: 20,
       total: 0,
       riskEvntTypeList: [], // 事件类型
+      isCstInvOptions: [
+        { label: '是', value: '0' },
+        { label: '否', value: '1' }
+      ],
       custTypList: [], // 客户类型
       idTypeList: [], // 证件类型
       statusList: [], // 事件状态
@@ -336,7 +356,9 @@ export default {
         startMantDate: '',
         endMantDate: '',
         riskEvntTyp: '',
+        iSCstInv: '',
         custBlngOrgn: '',
+        confirmStatus: '',
         custCod: '',
         custTyp: '',
         custNam: '',
@@ -361,7 +383,8 @@ export default {
         if (res.retCode === '0') {
           this.treeData = res.result.deptList
           this.$nextTick(() => {
-            this.queryForm = JSON.parse(window.sessionStorage.getItem('queryFormRiskEvent'))
+            const cacheQueryForm = JSON.parse(window.sessionStorage.getItem('queryFormRiskEvent') || '{}')
+            this.queryForm = Object.assign({}, this.queryForm, cacheQueryForm)
             this.getEventList()
           })
         } else {
