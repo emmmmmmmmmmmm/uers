@@ -53,7 +53,7 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="5">
+        <el-col :span="7">
           <el-form-item label="审核状态:">
             <el-select
               v-model="queryForm.confirmStatus"
@@ -69,16 +69,16 @@
           </el-form-item>
         </el-col>
         <!-- 客户信息查询组件 -->
-        <el-col :span="11">
+        <el-col :span="7">
           <custForm
             :custCod.sync="queryForm.custCod"
             :custNam.sync="queryForm.custNam"
           ></custForm>
         </el-col>
-        <el-col :span="8">
-          <el-form-item label="是否发起客户风险等级评估：">
+        <el-col :span="5">
+          <el-form-item label="是否发起客户风险等级评估:">
             <el-select
-              v-model="queryForm.iSCstInv"
+              v-model="queryForm.isCstInv"
               clearable
               placeholder="请选择"
             >
@@ -238,6 +238,15 @@
         >
         </el-table-column>
         <el-table-column
+          prop="isCstInv"
+          min-width="100"
+          label="是否发起客户风险等级评估"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.isCstInv === '0' ? '是' : scope.row.isCstInv === '1' ? '否' : '' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           min-width="200"
           prop="fileId"
           label="附件"
@@ -345,8 +354,10 @@ export default {
       total: 0,
       riskEvntTypeList: [], // 事件类型
       isCstInvOptions: [
-        { label: '是', value: '0' },
-        { label: '否', value: '1' }
+        // eslint-disable-next-line standard/object-curly-even-spacing
+        { label: '是', value: '0'},
+        // eslint-disable-next-line standard/object-curly-even-spacing
+        { label: '否', value: '1'}
       ],
       custTypList: [], // 客户类型
       idTypeList: [], // 证件类型
@@ -356,7 +367,7 @@ export default {
         startMantDate: '',
         endMantDate: '',
         riskEvntTyp: '',
-        iSCstInv: '',
+        isCstInv: '',
         custBlngOrgn: '',
         confirmStatus: '',
         custCod: '',
@@ -383,7 +394,7 @@ export default {
         if (res.retCode === '0') {
           this.treeData = res.result.deptList
           this.$nextTick(() => {
-            const cacheQueryForm = JSON.parse(window.sessionStorage.getItem('queryFormRiskEvent') || '{}')
+            const cacheQueryForm = JSON.parse(window.sessionStorage.getItem('queryFormRiskEvent') || {})
             this.queryForm = Object.assign({}, this.queryForm, cacheQueryForm)
             this.getEventList()
           })
