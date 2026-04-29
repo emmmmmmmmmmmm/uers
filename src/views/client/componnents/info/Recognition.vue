@@ -295,6 +295,10 @@ export default {
         this.$message.info('取消暂存')
       })
     },
+    // 下载客户关联数据
+    downloadRelated (ruleOid) {
+      this.$emit('downloadRelated', ruleOid)
+    },
     // 下载附件
     download (id, name) {
       this.$api.myApi.investigation.investigationDownFile({ id }).then(res => {
