@@ -92,6 +92,40 @@
           </el-form-item>
         </el-col>
       </el-row>
+      <el-row>
+        <el-col :span="7">
+          <el-form-item label="风险事件前是否产生预警:">
+            <el-select
+              v-model="queryForm.isCstPre"
+              clearable
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in riskEventBeforeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="7">
+          <el-form-item label="风险事件前是否上报可疑:">
+            <el-select
+              v-model="queryForm.isCstSus"
+              clearable
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in riskEventBeforeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
     <section class="wrap-operation">
       <div class="wrap-export">
@@ -247,6 +281,24 @@
           </template>
         </el-table-column>
         <el-table-column
+          prop="isCstPre"
+          min-width="100"
+          label="风险事件前是否产生预警"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.isCstPre === '0' ? '是' : scope.row.isCstPre === '1' ? '否' : scope.row.isCstPre === '2' ? 'N/A' : '' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="isCstSus"
+          min-width="100"
+          label="风险事件前是否上报可疑"
+        >
+          <template slot-scope="scope">
+            <span>{{ scope.row.isCstSus === '0' ? '是' : scope.row.isCstSus === '1' ? '否' : scope.row.isCstSus === '2' ? 'N/A' : '' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           min-width="200"
           prop="fileId"
           label="附件"
@@ -359,6 +411,13 @@ export default {
         // eslint-disable-next-line standard/object-curly-even-spacing
         { label: '否', value: '1'}
       ],
+      riskEventBeforeOptions: [
+        // eslint-disable-next-line standard/object-curly-even-spacing
+        { label: '是', value: '0'},
+        // eslint-disable-next-line standard/object-curly-even-spacing
+        { label: '否', value: '1'},
+        { label: 'N/A', value: '2'}
+      ],
       custTypList: [], // 客户类型
       idTypeList: [], // 证件类型
       statusList: [], // 事件状态
@@ -368,6 +427,8 @@ export default {
         endMantDate: '',
         riskEvntTyp: '',
         isCstInv: '',
+        isCstPre: '',
+        isCstSus: '',
         custBlngOrgn: '',
         confirmStatus: '',
         custCod: '',
