@@ -198,11 +198,6 @@ export default {
     },
     // 下载客户关联数据
     downloadRelated (ruleOid) {
-      console.log('ruleOid的值为:', JSON.stringify(ruleOid.ruleOid))
-      console.log('regTyp的值为:', JSON.stringify(this.regTyp))
-      console.log('frRegRson.reasonList的值为:', JSON.stringify(this.frRegRson.reasonList))
-      console.log('reRegRson.reasonList的值为:', JSON.stringify(this.reRegRson.reasonList))
-
       let reasonList = this.regTyp === '1'
         ? (this.frRegRson && this.frRegRson.reasonList) || []
         : (this.reRegRson && this.reRegRson.reasonList) || []
@@ -212,26 +207,32 @@ export default {
         this.$message.error('没有找到数据')
         return
       }
+
       let params = {
         reasonList: [target],
-        cstNo: this.userInfo1.cstNo || this.userInfo2.cstNo,
-        persDto: this.userInfo1,
-        unitsDto: this.userInfo2
+        cstNo: this.userInfo1.cstNo || this.userInfo2.cstNo
       }
+      if (this.clientType === '11') {
+        params.persDto = this.userInfo1
+      } else {
+        params.unitsDto = this.userInfo2
+      }
+
       this.$api.myApi.client.downloadRelated(params).then(res => {
-        if (res.retCode === '0') {
-          let fileName = '关联客户-' + (target.ruleName) + '.xls'
-          let result = common.dataToFile(res.result.file, fileName, 'application/vnd.ms-excel')
-          if (result) {
-            this.$message('下载成功')
-          } else {
-            this.$message('下载成功')
-          }
-        } else {
-          this.$message.error(res.retMsg)
+        if (res.retCode !== '0') {
+          return this.$message.error(res.retMsg || '下载失败')
         }
-      }
-      )
+        let baseName = res.result.fileName || '关联客户'
+        let fileName = /\.xlsx?$/i.test(baseName) ? baseName : baseName + '.xls'
+        let ok = common.dataToFile(res.result.file, fileName, 'application/vnd.ms-excel')
+        if (ok) {
+          this.$message.success('下载成功')
+        } else {
+          this.$message.error('下载失败')
+        }
+      }).catch(() => {
+        this.$message.error('下载失败')
+      })
     }
   }
 }
