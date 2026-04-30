@@ -218,7 +218,7 @@ export default {
         persDto: this.userInfo1,
         unitsDto: this.userInfo2
       }
-      this.$api.client.downloadRelated(params).then(res => {
+      this.$api.myApi.client.downloadRelated(params).then(res => {
         if (res.retCode === '0') {
           let fileName = '关联客户-' + (target.ruleName) + '.xls'
           let result = common.dataToFile(res.result.file, fileName, 'application/vnd.ms-excel')

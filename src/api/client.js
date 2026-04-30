@@ -149,6 +149,6 @@ export default {
    * 接口含义：客户识别关联数据下载
    */
   downloadRelated: function (param) {
-    return get('dubhe/client/downloadRelated', param)
+    return post('dubhe/client/downloadRelated', param)
   }
 }
